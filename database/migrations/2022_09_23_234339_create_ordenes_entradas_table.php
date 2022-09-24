@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::create('ordenes_entradas', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
+            $table->foreignId('user_id')->constrained('users');
+            $table->string('name', 100)->unique();
             $table->string('origen', 100);
+            $table->timestamp('fecha_armado');
             $table->timestamps();
         });
     }

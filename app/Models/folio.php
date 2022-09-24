@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class folio extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'ordenes_entrada_id',
+        'name'
+    ];
 }

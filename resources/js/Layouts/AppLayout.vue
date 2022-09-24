@@ -56,7 +56,7 @@ const logout = () => {
                                 <NavLink :href="route('racks.index')" :active="route().current('racks.index')">
                                     Racks Manager
                                 </NavLink>
-                                <NavLink :href="route('tarimas.index')" :active="route().current('tarimas.index')">
+                                <NavLink :href="route('entradas.index')" :active="route().current('entradas.index')">
                                     Entarimado
                                 </NavLink>
                             </div>
@@ -213,6 +213,9 @@ const logout = () => {
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('racks.index')" :active="route().current('racks.index')">
                             Racks
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('entradas.index')" :active="route().current('entradas.index')">
+                            Entarimado
                         </ResponsiveNavLink>
                     </div>
 

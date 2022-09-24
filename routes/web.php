@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\ColumnaController;
+use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\NivelController;
+use App\Http\Controllers\OrdenesEntradaController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\TarimaController;
 use Illuminate\Foundation\Application;
@@ -24,7 +26,7 @@ Route::get('/', function () {
     return Inertia::render('Auth/Login', [
         'canResetPassword' => Route::has('password.reset'),
     ]);
-});
+})->middleware('guest');
 
 Route::middleware([
     'auth:sanctum',
@@ -43,5 +45,9 @@ Route::middleware([
         Route::apiResource('racks/{rack}/columns', ColumnaController::class)->only('index', 'store');
     });
     // Rutas Entarimado
-    Route::apiResource('tarimas', TarimaController::class)->only('index', 'store');
+    Route::apiResource('entradas', EntradaController::class)->only('index', 'store');
+
+    // Import Entradas
+    Route::get('ordenes-entradas/export/example', [OrdenesEntradaController::class, 'exportExample'])->name('ordenes-entradas.export.example');
+    Route::post('ordenes-entradas/import', [OrdenesEntradaController::class, 'importEntradas'])->name('ordenes-entradas.import');
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\entrada;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class EntradaController extends Controller
 {
@@ -12,20 +13,32 @@ class EntradaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $request->validate([
+            'direction' => 'in:desc,asc'
+        ]);
+        $entradas = entrada::select('entradas.*', 'productos.ean', 'folios.name as folio')
+            ->join('productos', 'entradas.producto_id', '=', 'productos.id')
+            ->join('folios', 'entradas.folio_id', '=', 'folios.id');
+
+        if (request()->has('search')) {
+            $search =  strtr(request('search'), array("'" => "\\'", "%" => "\\%"));
+            $entradas->where('productos.ean', 'like', '%' . $search . '%');
+            $entradas->orWhere('folios.name', 'like', '%' . $search . '%');
+        }
+        if (request()->has('field')) {
+            $entradas->orderBy(request('field'), request('direction'));
+        } else {
+            $entradas->orderBy('entradas.created_at', 'desc');
+        }
+        return Inertia::render('Tarimas/EntarimadoIndex', [
+            'entradas' => fn () => $entradas->get(),
+            'filters' => request(['search', 'field', 'direction'])
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -38,27 +51,6 @@ class EntradaController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\entrada  $entrada
-     * @return \Illuminate\Http\Response
-     */
-    public function show(entrada $entrada)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\entrada  $entrada
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(entrada $entrada)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
