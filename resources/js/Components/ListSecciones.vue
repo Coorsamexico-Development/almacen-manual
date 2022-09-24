@@ -25,7 +25,7 @@ const props = defineProps({
 
 
 const form = reactive({
-    name: '',
+    cantidad: '',
     tipo: props.typeInput,
     error: '',
     recentlySuccessful: false,
@@ -76,7 +76,8 @@ watch(indexTipoSub,
     <div class="p-1 border">
         <slot></slot>
         <div class="flex justify-center mx-2 mt-2">
-            <InputGroup :placeholder="placeholder" :type="typeInput" v-model="form.name" @clickButton="createSeccion()">
+            <InputGroup :placeholder="placeholder" :type="typeInput" v-model="form.cantidad"
+                @clickButton="createSeccion()">
                 <template #button>
                     <SpinProgress :inprogress="form.processing"></SpinProgress>
                     <div v-html="buttonText"></div>

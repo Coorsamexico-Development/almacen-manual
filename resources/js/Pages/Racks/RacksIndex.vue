@@ -8,11 +8,11 @@ import { useForm } from '@inertiajs/inertia-vue3';
 
 
 
-const RowOrColumn = ref("Fila");
+const RowOrColumn = ref("nivel");
 
 let selectedRack = ref({ id: -1 });
 
-const listaFilasOrColumn = ref([]);
+const listaNivelesOrColumn = ref([]);
 
 const formRack = useForm({
     name: ''
@@ -44,10 +44,10 @@ const createRack = (form) => {
     })
 }
 
-const getFilasRack = async () => {
-    await axios.get(route('racks.filas.index', selectedRack.value.id))
+const getNivelesRack = async () => {
+    await axios.get(route('racks.niveles.index', selectedRack.value.id))
         .then((resp) => {
-            listaFilasOrColumn.value = resp.data
+            listaNivelesOrColumn.value = resp.data
         })
         .catch((error) => {
             if (error.response.data.hasOwnProperty('errors')) {
@@ -62,7 +62,7 @@ const getFilasRack = async () => {
 const getColumnsRack = async () => {
     await axios.get(route('racks.columnas.index', selectedRack.value.id))
         .then((resp) => {
-            listaFilasOrColumn.value = resp.data
+            listaNivelesOrColumn.value = resp.data
         })
         .catch((error) => {
             if (error.response.data.hasOwnProperty('errors')) {
@@ -76,8 +76,8 @@ const getColumnsRack = async () => {
 
 watchEffect(() => {
     if (selectedRack.value.id !== -1) {
-        if (RowOrColumn.value === 'Fila') {
-            getFilasRack()
+        if (RowOrColumn.value === 'nivel') {
+            getNivelesRack()
         } else {
             getColumnsRack()
         }
@@ -99,19 +99,19 @@ watchEffect(() => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-xl sm:rounded-lg">
                     <div class="grid grid-cols-2 gap-1">
-                        <ListSecciones :secciones="[{id:1,name: 'Racks'}, {id:2,name: 'Racks 2'}]"
+                        <ListSecciones :secciones="[{id:1,name: 'Racks'}, {id:2,name: 'Racks 2'}]" typeInput="number"
                             @create-seccion="createRack($event)" @getSeccion="changeRack($event)">
                             <h2 class="pb-2 text-lg text-center text-gray-700">
                                 Racks
                             </h2>
                         </ListSecciones>
-                        <ListSecciones v-if="selectedRack.id !==-1" title="Filas y Columnas"
-                            :secciones="listaFilasOrColumn">
+                        <ListSecciones v-if="selectedRack.id !==-1" title="Niveles y Columnas" typeInput="number"
+                            :secciones="listaNivelesOrColumn">
                             <SelectComponent class="w-full" v-model="RowOrColumn">
-                                <option value="Fila">
-                                    Filas
+                                <option value="nivel">
+                                    Niveles
                                 </option>
-                                <option value="Columna">
+                                <option value="columna">
                                     Columnas
                                 </option>
                             </SelectComponent>

@@ -37,12 +37,12 @@ Route::middleware([
     Route::post('racks', function () {
         return Redirect::back();
     })->name('racks.store');
-    Route::get('racks/{rack}/filas', function (Int $rack) {
+    Route::get('racks/{rack}/niveles', function (Int $rack) {
         return [
             ['id' => 1, 'name' => 'Fila 1'],
             ['id' => 2, 'name' => 'Fila 2'],
         ];
-    })->name('racks.filas.index');
+    })->name('racks.niveles.index');
     Route::get('racks/{rack}/columnas', function (Int $rack) {
         return [
             ['id' => 1, 'name' => 'Columna 1'],
