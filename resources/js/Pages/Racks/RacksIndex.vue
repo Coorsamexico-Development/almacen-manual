@@ -51,6 +51,22 @@ const createRack = (form) => {
     })
 }
 
+const createNivelOrColumn = async (form) => {
+    const ruta = RowOrColumn.value === 'nivel' ? route('racks.nivels.store', selectedRack.value.id) : route('racks.columns.store', selectedRack.value.id)
+    await axios.post(ruta, form)
+        .then((resp) => {
+            listaNivelesOrColumn.value = listaNivelesOrColumn.value.concat(resp.data)
+        })
+        .catch((error) => {
+            if (error.response.data.hasOwnProperty('errors')) {
+
+                alert(error.response.data.message);
+            } else {
+                alert("Error GET" + selectedRack.value);
+            };
+        });
+
+}
 const getNivelesRack = async () => {
     await axios.get(route('racks.nivels.index', selectedRack.value.id))
         .then((resp) => {
@@ -113,7 +129,7 @@ watchEffect(() => {
                             </h2>
                         </ListSecciones>
                         <ListSecciones v-if="selectedRack.id !==-1" title="Niveles y Columnas" typeInput="number"
-                            :secciones="listaNivelesOrColumn">
+                            :secciones="listaNivelesOrColumn" @create-seccion="createNivelOrColumn($event)">
                             <SelectComponent class="w-full" v-model="RowOrColumn">
                                 <option value="nivel">
                                     Niveles

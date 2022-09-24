@@ -37,7 +37,7 @@ class ColumnaController extends Controller
 
 
             $totalCreate = (int) $validate['cantidad'];
-            $niveles =   $rack->niveles()->select('nivels.*')->get();
+            $niveles =   $rack->nivels()->select('nivels.*')->get();
             $totalColumns = $rack->columns()->count();
 
             for ($i = 1; $i <= $totalCreate; $i++) {

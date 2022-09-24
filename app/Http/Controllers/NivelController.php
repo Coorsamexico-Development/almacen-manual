@@ -35,11 +35,11 @@ class NivelController extends Controller
             DB::beginTransaction();
             $niveles = [];
             $totalCreate = (int) $validate['cantidad'];
-            $columnas =   $rack->nivels()->select('columnas.*')->get();
+            $columnas =   $rack->columns()->select('columnas.*')->get();
 
             $totalNivels = $rack->nivels()->count();
             for ($i = 1; $i <= $totalCreate; $i++) {
-                $newNivel['name'] = $this->lettersNivel($totalNivels + $i);
+                $newNivel['name'] = lettersNivel($totalNivels + $i);
                 $nivel = $rack->nivels()->create($newNivel);
                 //Store Posiciones de acuerdo a las columnas existentes
                 foreach ($columnas as $columna) {

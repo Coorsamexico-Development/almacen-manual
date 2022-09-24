@@ -34,8 +34,10 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    Route::apiResource('racks', RackController::class);
+    Route::apiResource('racks', RackController::class)->only('index', 'store');
+    Route::name('racks.')->group(function () {
 
-    Route::get('racks/{rack}/niveles', [NivelController::class, 'index'])->name('racks.nivels.index');
-    Route::get('racks/{rack}/columns', [ColumnaController::class, 'index'])->name('racks.columns.index');
+        Route::apiResource('racks/{rack}/nivels', NivelController::class)->only('index', 'store');
+        Route::apiResource('racks/{rack}/columns', ColumnaController::class)->only('index', 'store');
+    });
 });

@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class posicion extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'nivel_id',
+        'columna_id',
+    ];
 }
