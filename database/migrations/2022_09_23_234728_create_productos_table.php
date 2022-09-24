@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('familia_id')->constrained('familias');
+            $table->string('ean', 100)->unique();
+            $table->foreignId('familia_id')->nullable()->constrained('familias');
             $table->timestamps();
         });
     }

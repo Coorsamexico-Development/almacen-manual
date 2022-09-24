@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('entradas_reals', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignId('user_id')->constrained('users');
             $table->foreignId('entrada_id')->constrained('entradas');
+            $table->smallInteger('cantidad')->default(0);
             $table->timestamps();
         });
     }

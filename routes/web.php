@@ -3,6 +3,7 @@
 use App\Http\Controllers\ColumnaController;
 use App\Http\Controllers\NivelController;
 use App\Http\Controllers\RackController;
+use App\Http\Controllers\TarimaController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -34,10 +35,13 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
+    // Rutas Racks
     Route::apiResource('racks', RackController::class)->only('index', 'store');
     Route::name('racks.')->group(function () {
 
         Route::apiResource('racks/{rack}/nivels', NivelController::class)->only('index', 'store');
         Route::apiResource('racks/{rack}/columns', ColumnaController::class)->only('index', 'store');
     });
+    // Rutas Entarimado
+    Route::apiResource('tarimas', TarimaController::class)->only('index', 'store');
 });

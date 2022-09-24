@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::create('salidas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('folio_id')->constrained('folios');
+            $table->foreignId('oc_id')->constrained('ocs');
             $table->foreignId('producto_id')->constrained('productos');
+            $table->smallInteger('solicitado')->default(0);
+            $table->smallInteger('surtido')->default(0);
             $table->timestamps();
         });
     }

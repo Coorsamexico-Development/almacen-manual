@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('entradas_real_id')->constrained('entradas_reals');
             $table->foreignId('tarima_id')->constrained('tarimas');
             $table->foreignId('producto_id')->constrained('productos');
+            $table->smallInteger('cant_disponible')->default(0);
             $table->timestamps();
         });
     }

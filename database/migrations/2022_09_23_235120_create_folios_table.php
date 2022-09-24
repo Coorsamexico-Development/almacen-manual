@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('folios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('oc_id')->constrained('ocs');
-            $table->string('name');
+            $table->foreignId('ordenes_entrada_id')->constrained('ordenes_entradas');
+            $table->string('name', 100);
             $table->timestamps();
         });
     }

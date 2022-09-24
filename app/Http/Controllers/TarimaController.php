@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\tarima;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TarimaController extends Controller
 {
@@ -14,18 +15,10 @@ class TarimaController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Tarimas/EntarimadoIndex', []);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -38,27 +31,7 @@ class TarimaController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\tarima  $tarima
-     * @return \Illuminate\Http\Response
-     */
-    public function show(tarima $tarima)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\tarima  $tarima
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(tarima $tarima)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -68,17 +41,6 @@ class TarimaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, tarima $tarima)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\tarima  $tarima
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(tarima $tarima)
     {
         //
     }

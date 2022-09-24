@@ -53,10 +53,11 @@ const logout = () => {
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
-                            </div>
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('racks.index')" :active="route().current('racks.index')">
                                     Racks Manager
+                                </NavLink>
+                                <NavLink :href="route('tarimas.index')" :active="route().current('tarimas.index')">
+                                    Entarimado
                                 </NavLink>
                             </div>
                         </div>
@@ -209,6 +210,9 @@ const logout = () => {
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('racks.index')" :active="route().current('racks.index')">
+                            Racks
                         </ResponsiveNavLink>
                     </div>
 
