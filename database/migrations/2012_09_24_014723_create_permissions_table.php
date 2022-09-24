@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * cambio
-     * Run the migratoions.
+     * Run the migratoions.xsd
      *
      * @return void
      */
