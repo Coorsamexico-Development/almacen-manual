@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ColumnaController;
+use App\Http\Controllers\NivelController;
+use App\Http\Controllers\RackController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -31,22 +34,8 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    Route::get('racks', function () {
-        return Inertia::render('Racks/RacksIndex');
-    })->name('racks.index');
-    Route::post('racks', function () {
-        return Redirect::back();
-    })->name('racks.store');
-    Route::get('racks/{rack}/niveles', function (Int $rack) {
-        return [
-            ['id' => 1, 'name' => 'Fila 1'],
-            ['id' => 2, 'name' => 'Fila 2'],
-        ];
-    })->name('racks.niveles.index');
-    Route::get('racks/{rack}/columnas', function (Int $rack) {
-        return [
-            ['id' => 1, 'name' => 'Columna 1'],
-            ['id' => 2, 'name' => 'Columna 2'],
-        ];
-    })->name('racks.columnas.index');
+    Route::apiResource('racks', RackController::class);
+
+    Route::get('racks/{rack}/niveles', [NivelController::class, 'index'])->name('racks.nivels.index');
+    Route::get('racks/{rack}/columns', [ColumnaController::class, 'index'])->name('racks.columns.index');
 });

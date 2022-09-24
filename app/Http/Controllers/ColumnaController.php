@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\columna;
+use App\Models\posicion;
+use App\Models\rack;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ColumnaController extends Controller
 {
@@ -12,74 +17,50 @@ class ColumnaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(rack $rack)
     {
-        //
+        $columnas = $rack->columns()->select('id', 'name')->get();
+        return response()->json($columnas);
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Almacena una cantidad especifica de columnas
      */
-    public function create()
+    public function store(rack $rack, Request $request)
     {
-        //
-    }
+        $validate = $request->validate([
+            'cantidad' => ['required', 'numeric'], // unicamente el el componente vue tiene el nombre name
+        ]);
+        try {
+            DB::beginTransaction();
+            $columnas = [];
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\columna  $columna
-     * @return \Illuminate\Http\Response
-     */
-    public function show(columna $columna)
-    {
-        //
-    }
+            $totalCreate = (int) $validate['cantidad'];
+            $niveles =   $rack->niveles()->select('nivels.*')->get();
+            $totalColumns = $rack->columns()->count();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\columna  $columna
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(columna $columna)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\columna  $columna
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, columna $columna)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\columna  $columna
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(columna $columna)
-    {
-        //
+            for ($i = 1; $i <= $totalCreate; $i++) {
+                $newColumna['name'] = $totalColumns + $i;
+                $columna = $rack->columns()->create($newColumna);
+                //Store Posiciones de acuerdo a los niveles existentes
+                foreach ($niveles as $nivel) {
+                    posicion::create([
+                        'name' => $nivel->name . $columna->name,
+                        'nivel_id' => $nivel->id,
+                        'columna_id' => $columna->id,
+                        'status_posicion_id' => 1
+                    ]);
+                }
+                $columnas[] = $nivel;
+            }
+            DB::commit();
+            return response()->json($columnas);
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }

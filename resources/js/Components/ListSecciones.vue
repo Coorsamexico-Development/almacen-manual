@@ -33,9 +33,7 @@ const form = reactive({
     hasErrors: false,
     processing: false,
 });
-const indexTipoSub = ref(0);
 const seccionSelect = ref({});
-const typeInput = ref('text');
 const placeholder = ref('Nombre');
 
 const createSeccion = () => {
@@ -63,13 +61,7 @@ watchEffect(() => {
 
     form.padre_id = props.padre
 });
-watch(indexTipoSub,
-    (index) => {
 
-        form.tipo = tiposSubsecciones[index].tipo
-        typeInput = form.tipo == null ? 'text' : 'number';
-    }
-);
 
 </script>
 <template>

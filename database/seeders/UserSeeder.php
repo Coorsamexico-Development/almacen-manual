@@ -19,7 +19,11 @@ class UserSeeder extends Seeder
         //agregamos seeder default
         DB::table('users')->insert([
             'name' => 'admin',
-            'email' => 'admin@gmail.com',
+            'nombre' => 'Admin',
+            'ap_paterno' => 'Sistemas',
+            'ap_materno' => 'Coorsamexico',
+            'rol_id' => 1,
+            'email' => 'admin@coorsamexico.com',
             'password' => Hash::make('admin123'),
         ]);
     }

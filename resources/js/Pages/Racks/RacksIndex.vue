@@ -1,12 +1,16 @@
 <script setup>
 import { ref, watchEffect } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import Welcome from '@/Components/Welcome.vue';
 import ListSecciones from '../../Components/ListSecciones.vue';
 import SelectComponent from '../../Components/SelectComponent.vue';
 import { useForm } from '@inertiajs/inertia-vue3';
 
-
+defineProps({
+    racks: {
+        type: Object,
+        required: true,
+    }
+});
 
 const RowOrColumn = ref("nivel");
 
@@ -15,7 +19,7 @@ let selectedRack = ref({ id: -1 });
 const listaNivelesOrColumn = ref([]);
 
 const formRack = useForm({
-    name: ''
+    cantidad: ''
 });
 
 
@@ -27,25 +31,28 @@ const changeRack = (rack) => {
 
 const createRack = (form) => {
     form.processing = true;
+    formRack.cantidad = form.cantidad;
     formRack.post(route('racks.store'), {
         preserveScroll: true,
         preserveState: true,
-        only: ['racks',],
+        only: [],
         onSuccess: () => {
+
             formRack.reset();
             form.processing = false;
             form.hasError = false
         },
-        onError: () => {
+        onError: (e) => {
+            console.log("Error", e);
             form.processing = false;
-            form.hasError = true;
-            form.error = formRack.error;
+            form.hasErrors = true;
+            form.error = e.cantidad;
         }
     })
 }
 
 const getNivelesRack = async () => {
-    await axios.get(route('racks.niveles.index', selectedRack.value.id))
+    await axios.get(route('racks.nivels.index', selectedRack.value.id))
         .then((resp) => {
             listaNivelesOrColumn.value = resp.data
         })
@@ -60,7 +67,7 @@ const getNivelesRack = async () => {
 
 }
 const getColumnsRack = async () => {
-    await axios.get(route('racks.columnas.index', selectedRack.value.id))
+    await axios.get(route('racks.columns.index', selectedRack.value.id))
         .then((resp) => {
             listaNivelesOrColumn.value = resp.data
         })
@@ -99,8 +106,8 @@ watchEffect(() => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-xl sm:rounded-lg">
                     <div class="grid grid-cols-2 gap-1">
-                        <ListSecciones :secciones="[{id:1,name: 'Racks'}, {id:2,name: 'Racks 2'}]" typeInput="number"
-                            @create-seccion="createRack($event)" @getSeccion="changeRack($event)">
+                        <ListSecciones :secciones="racks" typeInput="number" @create-seccion="createRack($event)"
+                            @getSeccion="changeRack($event)">
                             <h2 class="pb-2 text-lg text-center text-gray-700">
                                 Racks
                             </h2>
