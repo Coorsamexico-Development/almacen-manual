@@ -13,7 +13,8 @@ class ordenes_entrada extends Model
         'user_id',
         'name',
         'origen',
-        'fecha_armado'
+        'fecha_armado',
+        'status_ordenes_entrada_id'
     ];
 
     public function entradas()

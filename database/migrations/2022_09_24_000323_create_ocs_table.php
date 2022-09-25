@@ -15,7 +15,10 @@ return new class extends Migration
     {
         Schema::create('ocs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cliente_id')->constrained('clientes');
             $table->string('name');
+            $table->timestamp('fecha_entraga');
+            $table->boolean('active')->default(1);
             $table->timestamps();
         });
     }

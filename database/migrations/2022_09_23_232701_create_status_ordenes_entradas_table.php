@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posicions', function (Blueprint $table) {
+        Schema::create('status_ordenes_entradas', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('nivel_id')->constrained('nivels');
-            $table->foreignId('columna_id')->constrained('columnas');
-            $table->foreignId('status_posicion_id')->default(1)->constrained('status_posicions');
+            $table->string('name', 100)->unique();
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posicions');
+        Schema::dropIfExists('status_ordenes_entradas');
     }
 };

@@ -13,5 +13,6 @@ class posicion extends Model
         'name',
         'nivel_id',
         'columna_id',
+        'status_posicion_id',
     ];
 }

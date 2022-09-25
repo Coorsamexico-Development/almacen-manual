@@ -68,7 +68,7 @@ watchEffect(() => {
     <div class="p-1 border">
         <slot></slot>
         <div class="flex justify-center mx-2 mt-2">
-            <InputGroup :placeholder="placeholder" :type="typeInput" v-model="form.cantidad"
+            <InputGroup :placeholder="placeholder" :type="typeInput" min="1" v-model="form.cantidad"
                 @clickButton="createSeccion()">
                 <template #button>
                     <SpinProgress :inprogress="form.processing"></SpinProgress>
