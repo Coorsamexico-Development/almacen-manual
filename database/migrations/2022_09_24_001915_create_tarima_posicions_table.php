@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('posicion_id')->constrained('posicions');
             $table->foreignId('tarima_id')->constrained('tarimas');
+            $table->boolean('active')->default(1);
             $table->timestamps();
         });
     }
