@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
 class OrdenesEntradaController extends Controller
@@ -19,9 +20,26 @@ class OrdenesEntradaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $request->validate([
+            'direction' => 'in:desc,asc'
+        ]);
+        $ordenesEntradas = ordenes_entrada::select('ordenes_entradas.*');
+
+        if (request()->has('search')) {
+            $search =  strtr(request('search'), array("'" => "\\'", "%" => "\\%"));
+            $ordenesEntradas->where('ordenes_entradas.name', 'like', '%' . $search . '%');
+        }
+        if (request()->has('field')) {
+            $ordenesEntradas->orderBy(request('field'), request('direction'));
+        } else {
+            $ordenesEntradas->orderBy('ordenes_entradas.created_at', 'desc');
+        }
+        return Inertia::render('OrdenEntrada/OrdenesEntradasIndex', [
+            'ordenesEntradas' => fn () => $ordenesEntradas->paginate(10),
+            'filters' => request(['search', 'field', 'direction'])
+        ]);
     }
 
     /**

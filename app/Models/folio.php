@@ -13,4 +13,9 @@ class folio extends Model
         'ordenes_entrada_id',
         'name'
     ];
+
+    public function entradas()
+    {
+        return $this->hasMany(entrada::class, 'folio_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\folio;
+use App\Models\ordenes_entrada;
 use Illuminate\Http\Request;
 
 class FolioController extends Controller
@@ -12,74 +13,28 @@ class FolioController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ordenes_entrada $ordenEntrada, Request $request)
     {
-        //
-    }
+        $request->validate([
+            'direction' => 'in:desc,asc'
+        ]);
+        $folios = $ordenEntrada->folios()->select('folios.id', 'folios.name')
+            ->selectRaw('sum(entradas.cantidad) as totals_productos')
+            ->leftJoin('entradas', 'folios.id', '=', 'entradas.folio_id')
+            ->groupBy('folios.id', 'folios.name');
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\folio  $folio
-     * @return \Illuminate\Http\Response
-     */
-    public function show(folio $folio)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\folio  $folio
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(folio $folio)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\folio  $folio
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, folio $folio)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\folio  $folio
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(folio $folio)
-    {
-        //
+        if (request()->has('search')) {
+            $search =  strtr(request('search'), array("'" => "\\'", "%" => "\\%"));
+            $folios->where('folios.name', 'like', '%' . $search . '%');
+        }
+        if (request()->has('field')) {
+            $folios->orderBy(request('field'), request('direction'));
+        } else {
+            $folios->orderBy('folios.created_at', 'desc');
+        }
+        return response()->json([
+            'folios' =>  $folios->paginate(10),
+            'filters' => request(['search', 'field', 'direction'])
+        ]);
     }
 }

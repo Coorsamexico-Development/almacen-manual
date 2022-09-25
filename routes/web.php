@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ColumnaController;
 use App\Http\Controllers\EntradaController;
+use App\Http\Controllers\EntradasRealController;
+use App\Http\Controllers\FolioController;
 use App\Http\Controllers\NivelController;
 use App\Http\Controllers\OrdenesEntradaController;
 use App\Http\Controllers\RackController;
@@ -44,8 +46,15 @@ Route::middleware([
         Route::apiResource('racks/{rack}/nivels', NivelController::class)->only('index', 'store');
         Route::apiResource('racks/{rack}/columns', ColumnaController::class)->only('index', 'store');
     });
-    // Rutas Entarimado
-    Route::apiResource('entradas', EntradaController::class)->only('index', 'store');
+    // Rutas Ordendes de Entrada
+    Route::apiResource('ordenes-entrada', OrdenesEntradaController::class)->only('index', 'store');
+
+    // Ruta folios en una Orden de Entrada
+    Route::get('ordenes-entrada/{ordenEntrada}/folios', [FolioController::class, 'index'])->name('ordenes-entradas.folios.index');
+    // Ruta productos  en un folio
+    Route::get('folios/{folio}/entradas', [EntradaController::class, 'index'])->name('folios.entradas.index');
+    Route::post('entradas/{entrada}/entradas-reales', [EntradasRealController::class, 'store'])->name('entradas.entradas-reales.store');
+
 
     // Import Entradas
     Route::get('ordenes-entradas/export/example', [OrdenesEntradaController::class, 'exportExample'])->name('ordenes-entradas.export.example');

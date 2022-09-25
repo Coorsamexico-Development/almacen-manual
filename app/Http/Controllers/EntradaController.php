@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\entrada;
+use App\Models\folio;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,27 +14,38 @@ class EntradaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(folio $folio, Request $request)
     {
         $request->validate([
             'direction' => 'in:desc,asc'
         ]);
-        $entradas = entrada::select('entradas.*', 'productos.ean', 'folios.name as folio')
+        $entradas = $folio->entradas()->select(
+            'entradas.id',
+            'entradas.cantidad',
+            'productos.ean as ean',
+            'productos.name as producto'
+        )->selectRaw('ifnull(sum(entradas_reals.cantidad),0) as cantidad_real')
             ->join('productos', 'entradas.producto_id', '=', 'productos.id')
-            ->join('folios', 'entradas.folio_id', '=', 'folios.id');
+            ->leftJoin('entradas_reals', 'entradas.id', '=', 'entradas_reals.entrada_id')
+            ->groupBy(
+                'entradas.id',
+                'entradas.cantidad',
+                'productos.ean',
+                'productos.name'
+            );
 
         if (request()->has('search')) {
             $search =  strtr(request('search'), array("'" => "\\'", "%" => "\\%"));
-            $entradas->where('productos.ean', 'like', '%' . $search . '%');
-            $entradas->orWhere('folios.name', 'like', '%' . $search . '%');
+            $entradas->where('productos.ean', 'like', '%' . $search . '%')
+                ->orWhere('productos.name', 'like', '%' . $search . '%');
         }
         if (request()->has('field')) {
             $entradas->orderBy(request('field'), request('direction'));
         } else {
             $entradas->orderBy('entradas.created_at', 'desc');
         }
-        return Inertia::render('Tarimas/EntarimadoIndex', [
-            'entradas' => fn () => $entradas->get(),
+        return response()->json([
+            'entradas' => $entradas->paginate(10),
             'filters' => request(['search', 'field', 'direction'])
         ]);
     }

@@ -17,8 +17,8 @@ class ordenes_entrada extends Model
     ];
 
 
-    public function entradas()
+    public function folios()
     {
-        return $this->hasManyThrough(entrada::class, folio::class);
+        return $this->hasMany(folio::class, 'ordenes_entrada_id');
     }
 }

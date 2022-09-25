@@ -2,6 +2,7 @@
 import { reactive, ref, watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { useForm } from '@inertiajs/inertia-vue3';
+import { pickBy, throttle } from 'lodash';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DataTable from '../../Components/DataTable.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -10,14 +11,17 @@ import SpinProgress from '../../Components/SpinProgress.vue';
 import InfoButton from '../../Components/InfoButton.vue';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import SearchInput from '@/Components/SearchInput.vue';
-import { pickBy, throttle } from 'lodash';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Pagination from '../../Components/Pagination.vue';
+import FoliosOrdenEntradaModal from './Partials/FoliosOrdenEntradaModal.vue';
+
+
 const props = defineProps({
     filters: {
         type: Object,
         required: true
     },
-    entradas: {
+    ordenesEntradas: {
         type: Object,
         required: true
     },
@@ -35,6 +39,8 @@ const form = useForm({
 
 const file = ref(null);
 const fileName = ref(null);
+const ordenEntrada = ref({ id: -1 });
+const showingFoliosModal = ref(false);
 
 const selectFile = () => {
     file.value.click();
@@ -59,10 +65,21 @@ const sort = (field) => {
     params.direction = params.direction === "asc" ? "desc" : "asc";
 };
 
+
+const showFolios = (entradaSelect) => {
+    ordenEntrada.value = entradaSelect;
+    showingFoliosModal.value = true;
+}
+const closeModalFolio = () => {
+    ordenEntrada.value = { id: -1 };
+    showingFoliosModal.value = false;
+}
+
+
 watch(params, throttle(function () {
     let paramsClear = pickBy(params);
     console.log("order", paramsClear);
-    Inertia.get(route("entradas.index"), paramsClear, {
+    Inertia.get(route("ordenes-entrada.index"), paramsClear, {
         replace: true,
         preserveScroll: true,
         preserveState: true,
@@ -144,7 +161,7 @@ watch(params, throttle(function () {
                                 <th scope="col"
                                     class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
                                     <span class="" @click="sort('ean')">
-                                        PRODUCTOS
+                                        ORDEN DE ENTRADA
                                         <template v-if="params.field === 'ean'">
                                             <svg v-if="params.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                                 class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -161,91 +178,54 @@ watch(params, throttle(function () {
                                 </th>
                                 <th scope="col"
                                     class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                    <span class="" @click="sort('folio')">
-                                        FOLIOS
-                                        <template v-if="params.field === 'folio'">
-                                            <svg v-if="params.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
-                                                class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
-                                            </svg>
-                                            <svg v-if="params.direction === 'desc'" xmlns="http://www.w3.org/2000/svg"
-                                                class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
-                                            </svg>
-                                        </template>
-                                    </span>
-                                </th>
-                                <th scope="col"
-                                    class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                    <span class="" @click="sort('cantidad')">
-                                        CANTIDAD
-                                        <template v-if="params.field === 'cantidad'">
-                                            <svg v-if="params.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
-                                                class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
-                                            </svg>
-                                            <svg v-if="params.direction === 'desc'" xmlns="http://www.w3.org/2000/svg"
-                                                class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                    d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
-                                            </svg>
-                                        </template>
+                                    <span>
+                                        PRODUCTOS
                                     </span>
                                 </th>
                                 <th scope="col"
                                     class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
                                     <span>
-                                        POSICIONES
+                                        FECHA DE ARMADO
                                     </span>
                                 </th>
                                 <th scope="col"
                                     class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
                                     <span>
-                                        SALIDAS
+                                        PROVEEDOR
                                     </span>
                                 </th>
                             </tr>
                         </template>
                         <template #table-body>
-                            <tr v-for="(entrada, index) in entradas" :key="index" class="text-sm text-gray-500">
+                            <tr v-for="(entrada, index) in ordenesEntradas.data" :key="index"
+                                class="text-sm text-gray-500">
                                 <td class="px-2 py-1 whitespace-nowrap">
-                                    {{ entrada.ean }}
+                                    {{ entrada.name }}
                                 </td>
                                 <td class="px-2 py-1 whitespace-nowrap">
-                                    {{ entrada.folio }}
-                                </td>
-                                <td class="px-2 py-1 whitespace-nowrap">
-                                    {{ entrada.cantidad }}
-                                </td>
-                                <td class="px-2 py-1 whitespace-nowrap">
-                                    <SecondaryButton>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
-                                            viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd"
-                                                d="M3.1 11.2a.5.5 0 0 1 .4-.2H6a.5.5 0 0 1 0 1H3.75L1.5 15h13l-2.25-3H10a.5.5 0 0 1 0-1h2.5a.5.5 0 0 1 .4.2l3 4a.5.5 0 0 1-.4.8H.5a.5.5 0 0 1-.4-.8l3-4z" />
-                                            <path fill-rule="evenodd"
-                                                d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999z" />
-                                        </svg>
-                                    </SecondaryButton>
-                                </td>
-                                <td class="px-2 py-1 whitespace-nowrap">
-                                    <SecondaryButton>
+                                    <SecondaryButton @click="showFolios(entrada)">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
                                             viewBox="0 0 16 16">
                                             <path
-                                                d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09zM4.157 8.5H7a.5.5 0 0 1 .478.647L6.11 13.59l5.732-6.09H9a.5.5 0 0 1-.478-.647L9.89 2.41 4.157 8.5z" />
+                                                d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5zM3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-7zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0v-7z" />
                                         </svg>
                                     </SecondaryButton>
+                                </td>
+                                <td class="px-2 py-1 whitespace-nowrap">
+                                    {{entrada.fecha_armado}}
+                                </td>
+                                <td class="px-2 py-1 whitespace-nowrap">
+                                    {{entrada.origen}}
                                 </td>
                             </tr>
                         </template>
 
                     </DataTable>
+                    <Pagination :pagination="ordenesEntradas" />
                 </div>
             </div>
         </div>
+        <!-- Modals -->
+        <FoliosOrdenEntradaModal :show="showingFoliosModal" :orden-entrada="ordenEntrada" @close="closeModalFolio()" />
     </AppLayout>
 </template>

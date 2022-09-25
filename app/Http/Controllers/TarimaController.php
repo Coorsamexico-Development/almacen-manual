@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\entrada;
 use App\Models\tarima;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

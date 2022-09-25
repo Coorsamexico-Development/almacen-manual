@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\entrada;
 use App\Models\entradas_real;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class EntradasRealController extends Controller
 {
@@ -17,15 +20,6 @@ class EntradasRealController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -33,32 +27,31 @@ class EntradasRealController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(entrada $entrada, Request $request)
     {
-        //
+        $validateData = $request->validate([
+            'cantidad' => ['required', 'numeric', 'min:1']
+        ]);
+
+        $totalAvance = $entrada->entradasReales()->selectRaw('ifnull(sum(cantidad), 0) as avance')->first()->avance;
+
+        if ($totalAvance + $validateData['cantidad'] > $entrada->cantidad) {
+            throw ValidationException::withMessages([
+                'cantidad' => 'La cantidad supera a lo esperado'
+            ]);
+        } else {
+            $entrada->entradasReales()->create([
+                'cantidad' => $validateData['cantidad'],
+                'disponible' => $validateData['cantidad'],
+                'user_id' => Auth::id()
+            ]);
+        }
+        return response()->json([
+            'message' => 'guardado'
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\entradas_real  $entradas_real
-     * @return \Illuminate\Http\Response
-     */
-    public function show(entradas_real $entradas_real)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\entradas_real  $entradas_real
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(entradas_real $entradas_real)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('entrada_id')->constrained('entradas');
             $table->smallInteger('cantidad')->default(0);
+            $table->smallInteger('disponible')->default(0);
             $table->timestamps();
         });
     }
