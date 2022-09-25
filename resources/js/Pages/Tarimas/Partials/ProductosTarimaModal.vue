@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import DialogModal from '@/Components/DialogModal.vue'
-import FoliosTable from './FoliosTable.vue';
-import EntradasFolioTable from './EntradasFolioTable.vue';
+import ProductosTarimaTable from './ProductosTarimaTable.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 
+
 const emit = defineEmits(['close', 'messageError', 'showImagesTarima']);
-const folioSelected = ref({ id: -1 })
+const productoSelected = ref({ id: -1 })
 
 
 const props = defineProps({
@@ -14,21 +14,21 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    ordenEntrada: {
+    tarima: {
         type: Object,
-        required: true
+        require: true
     },
 });
 
 
 
 const close = () => {
+    productoSelected.value = { id: -1 }
     emit('close');
-    folioSelected.value = { id: -1 }
 };
 
-const selectFolio = (folio) => {
-    folioSelected.value = folio;
+const selectTarima = (folio) => {
+    productoSelected.value = folio;
 }
 
 </script>
@@ -39,18 +39,17 @@ const selectFolio = (folio) => {
         <template #title>
             <div class="flex gap-2 px-2">
                 <h1 class="font-semibold text-gray-600 text-md">
-                    Tarimas
+                    Productos
                 </h1>
-                <span class="p-1 font-semibold text-blue-900">
-                    {{ ordenEntrada.name }}
+                <span class="px-2 text-white bg-gray-700 rounded">
+                    {{tarima.name}}
                 </span>
             </div>
         </template>
         <template #content>
             <div class="flex w-full">
-                <FoliosTable :class="folioSelected.id == -1 ? 'w-full' : 'w-1/2'" :orden-entrada="ordenEntrada"
-                    @selected="selectFolio($event)" />
-                <EntradasFolioTable v-if="folioSelected.id !== -1" :folio="folioSelected" />
+                <ProductosTarimaTable :class="productoSelected.id == -1 ? 'w-full' : 'w-1/2'" :tarima="tarima"
+                    @selected="selectTarima($event)" />
             </div>
         </template>
         <template #footer>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\entrada;
 use App\Models\entradas_real;
+use App\Models\producto;
 use App\Models\productos_tarimas;
 use App\Models\tarima;
 use Exception;
@@ -280,5 +281,40 @@ class TarimaController extends Controller
                 'cantidad' => $e->getMessage()
             ]);
         }
+    }
+
+    public function productoIndex(tarima $tarima, Request $request)
+    {
+        $request->validate([
+            'direction' => 'in:desc,asc'
+        ]);
+        $productos = producto::select(
+            'productos.id',
+            'productos.ean',
+            'productos.name',
+        )->selectRaw('ifnull(sum(productos_tarimas.cant_disponible),0) as cantidad_disponible')
+            ->join('productos_tarimas', function ($join) use ($tarima) {
+                $join->on('productos.id', '=', 'productos_tarimas.producto_id')
+                    ->on('productos_tarimas.tarima_id', '=', DB::raw($tarima->id));
+            })->groupBy(
+                'productos.id',
+                'productos.ean',
+                'productos.name',
+            );
+
+        if (request()->has('search')) {
+            $search =  strtr(request('search'), array("'" => "\\'", "%" => "\\%"));
+            $productos->where('productos.ean', 'like', '%' . $search . '%')
+                ->orWhere('productos.name', 'like', '%' . $search . '%');
+        }
+        if (request()->has('field')) {
+            $productos->orderBy(request('field'), request('direction'));
+        } else {
+            $productos->orderBy('productos.created_at', 'desc');
+        }
+        return response()->json([
+            'productos' =>  $productos->paginate(20),
+            'filters' => request(['search', 'field', 'direction'])
+        ]);
     }
 }

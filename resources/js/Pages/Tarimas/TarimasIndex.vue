@@ -12,6 +12,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import EntradasModal from './Partials/EntradasModal.vue';
 import Pagination from '../../Components/Pagination.vue';
 import { useForm } from '@inertiajs/inertia-vue3';
+import ProductosTarimaModal from './Partials/ProductosTarimaModal.vue';
 
 const props = defineProps({
     filters: {
@@ -38,6 +39,7 @@ const params = reactive({
 
 const tarima = ref({ id: -1 });
 const showingEntradas = ref(false);
+const showingProductos = ref(false);
 
 
 const form = useForm();
@@ -48,7 +50,7 @@ const sort = (field) => {
 };
 
 
-const showTarimastarimas = (tarimaselect) => {
+const showTarimas = (tarimaselect) => {
     tarima.value = tarimaselect;
     showingEntradas.value = true;
 }
@@ -61,6 +63,15 @@ const createTarima = () => {
     })
 }
 
+const showProductos = (tarimaselect) => {
+    tarima.value = tarimaselect;
+    showingProductos.value = true;
+}
+
+const closeModalProductos = () => {
+    tarima.value = { id: -1 };
+    showingProductos.value = false;
+}
 
 watch(params, throttle(function () {
     let paramsClear = pickBy(params);
@@ -111,7 +122,7 @@ watch(params, throttle(function () {
                                         </li>
                                     </ul>
                                 </ActionMessage>
-                                <SecondaryButton @click="showTarimastarimas(tarimaExpress)">
+                                <SecondaryButton @click="showTarimas(tarimaExpress)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
                                         viewBox="0 0 16 16">
                                         <path
@@ -181,7 +192,7 @@ watch(params, throttle(function () {
                                     {{ tarima.created_at }}
                                 </td>
                                 <td class="px-2 py-1 whitespace-nowrap">
-                                    <SecondaryButton @click="showTarimastarimas(tarima)">
+                                    <SecondaryButton @click="showProductos(tarima)">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
                                             viewBox="0 0 16 16">
                                             <path
@@ -196,7 +207,7 @@ watch(params, throttle(function () {
                                     </span>
                                 </td>
                                 <td class="px-2 py-1 whitespace-nowrap">
-                                    <SecondaryButton @click="showTarimastarimas(tarima)">
+                                    <SecondaryButton @click="showTarimas(tarima)">
                                         <span class="mr-2" v-if="tarima.posicion !== null">{{tarima.posicion}}</span>
                                         <span class="mr-2" v-else>SIN POSICION</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
@@ -209,7 +220,7 @@ watch(params, throttle(function () {
                                     </SecondaryButton>
                                 </td>
                                 <td class="px-2 py-1 whitespace-nowrap">
-                                    <PrimaryButton @click="showTarimastarimas(tarima)">
+                                    <PrimaryButton @click="showTarimas(tarima)">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
                                             viewBox="0 0 16 16">
                                             <path
@@ -229,5 +240,6 @@ watch(params, throttle(function () {
             </div>
         </div>
         <EntradasModal :show="showingEntradas" :tarima="tarima" @close="showingEntradas = false" />
+        <ProductosTarimaModal :show="showingProductos" :tarima="tarima" @close="closeModalProductos()" />
     </AppLayout>
 </template>

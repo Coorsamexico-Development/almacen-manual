@@ -52,6 +52,7 @@ Route::middleware([
     Route::apiResource('tarimas', TarimaController::class)->only('index', 'store');
     Route::post('tarimas/{tarima}/entrdas-productos', [TarimaController::class, 'storeEntradaProducto'])->name('tarimas.entradas-productos.store');
     Route::delete('tarimas/{tarima}/entrdas-productos', [TarimaController::class, 'destroyEntradaProducto'])->name('tarimas.entradas-productos.destroy');
+    Route::get('tarimas/{tarima}/productos', [TarimaController::class, 'productoIndex'])->name('tarimas.productos.index');
     Route::get('entradas/{tarima}', [EntradaController::class, 'index'])->name('entradas.index');
 
     // Ruta folios en una Orden de Entrada
