@@ -16,6 +16,10 @@ class ordenes_entrada extends Model
         'fecha_armado'
     ];
 
+    public function entradas()
+    {
+        return $this->hasManyThrough(entrada::class, folio::class);
+    }
 
     public function folios()
     {

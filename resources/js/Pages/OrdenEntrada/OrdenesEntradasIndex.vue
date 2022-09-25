@@ -160,9 +160,9 @@ watch(params, throttle(function () {
                             <tr class="text-center">
                                 <th scope="col"
                                     class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                    <span class="" @click="sort('ean')">
+                                    <span class="" @click="sort('name')">
                                         ORDEN DE ENTRADA
-                                        <template v-if="params.field === 'ean'">
+                                        <template v-if="params.field === 'name'">
                                             <svg v-if="params.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                                 class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                                 <path

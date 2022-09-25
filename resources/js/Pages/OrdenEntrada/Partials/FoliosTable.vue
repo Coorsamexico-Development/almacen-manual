@@ -1,6 +1,5 @@
 <script setup>
-import { watch, ref, reactive, computed, onBeforeMount, watchEffect } from 'vue'
-import { usePage } from '@inertiajs/inertia-vue3';
+import { watch, ref, reactive, watchEffect } from 'vue'
 import { throttle } from 'lodash'
 
 import { removeSelect, selectElement } from '../../../utils/main'

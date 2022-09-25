@@ -52,7 +52,7 @@ class ColumnaController extends Controller
                         'status_posicion_id' => 1
                     ]);
                 }
-                $columnas[] = $nivel;
+                $columnas[] = $columna;
             }
             DB::commit();
             return response()->json($columnas);

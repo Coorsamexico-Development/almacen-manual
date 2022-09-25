@@ -52,7 +52,7 @@ Route::middleware([
     // Ruta folios en una Orden de Entrada
     Route::get('ordenes-entrada/{ordenEntrada}/folios', [FolioController::class, 'index'])->name('ordenes-entradas.folios.index');
     // Ruta productos  en un folio
-    Route::get('folios/{folio}/entradas', [EntradaController::class, 'index'])->name('folios.entradas.index');
+    Route::get('folios/{folio}/entradas', [FolioController::class, 'indexEntradas'])->name('folios.entradas.index');
     Route::post('entradas/{entrada}/entradas-reales', [EntradasRealController::class, 'store'])->name('entradas.entradas-reales.store');
 
 
