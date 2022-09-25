@@ -50,12 +50,15 @@ Route::middleware([
     Route::apiResource('ordenes-entrada', OrdenesEntradaController::class)->only('index', 'store');
     // Entarimado
     Route::apiResource('tarimas', TarimaController::class)->only('index', 'store');
+    Route::post('tarimas/{tarima}/entrdas-productos', [TarimaController::class, 'storeEntradaProducto'])->name('tarimas.entradas-productos.store');
+    Route::delete('tarimas/{tarima}/entrdas-productos', [TarimaController::class, 'destroyEntradaProducto'])->name('tarimas.entradas-productos.destroy');
+    Route::get('entradas/{tarima}', [EntradaController::class, 'index'])->name('entradas.index');
 
     // Ruta folios en una Orden de Entrada
     Route::get('ordenes-entrada/{ordenEntrada}/folios', [FolioController::class, 'index'])->name('ordenes-entradas.folios.index');
     // Ruta productos  en un folio
     Route::get('folios/{folio}/entradas', [FolioController::class, 'indexEntradas'])->name('folios.entradas.index');
-    Route::post('entradas/{entrada}/entradas-reales', [EntradasRealController::class, 'store'])->name('entradas.entradas-reales.store');
+    Route::post('entradas-folios/{entrada}/entradas-reales', [EntradasRealController::class, 'store'])->name('entradas.entradas-reales.store');
 
 
     // Import Entradas

@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\entrada;
-use App\Models\folio;
+use App\Models\tarima;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
 
 class EntradaController extends Controller
 {
@@ -15,7 +14,7 @@ class EntradaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(tarima $tarima, Request $request)
     {
         $request->validate([
             'direction' => 'in:desc,asc'
@@ -26,7 +25,7 @@ class EntradaController extends Controller
             'productos.ean',
             'productos.name as producto',
         )
-            ->selectRaw('ifnull(sum(entradas_reals.disponible),0) as canitdad_disponible')
+            ->selectRaw('ifnull(sum(entradas_reals.disponible),0) as cantidad_disponible')
             ->join('folios', 'entradas.folio_id', '=', 'folios.id')
             ->join('productos', 'entradas.producto_id', '=', 'productos.id')
             ->join('entradas_reals', function ($join) {
@@ -50,8 +49,8 @@ class EntradaController extends Controller
         } else {
             $entradas->orderBy('entradas.created_at', 'desc');
         }
-        return Inertia::render('Entradas/EntarimadoIndex', [
-            'entradas' => fn () => $entradas->paginate(20),
+        return response()->json([
+            'entradas' =>  $entradas->paginate(20),
             'filters' => request(['search', 'field', 'direction'])
         ]);
     }

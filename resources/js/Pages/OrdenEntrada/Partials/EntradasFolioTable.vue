@@ -32,22 +32,20 @@ const filters = reactive({ search: null, field: null, direction: null });
 
 
 const getEntradasFolio = async () => {
-    if (props.folio.id !== -1) {
-        try {
-            const response = await axios.get(route('folios.entradas.index', props.folio.id));
-            entradas.value = response.data.entradas;
-        } catch (error) {
-            if (error.response) {
-                console.log(error.response);
-                let messageError = '';
-                const messageServer = error.response.data.message
-                if (error.response.status != 500) {
-                    messageError = messageServer;
-                } else {
-                    messageError = 'Internal Server Error';
-                }
-                alert(messageError);
+    try {
+        const response = await axios.get(route('folios.entradas.index', props.folio.id));
+        entradas.value = response.data.entradas;
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response);
+            let messageError = '';
+            const messageServer = error.response.data.message
+            if (error.response.status != 500) {
+                messageError = messageServer;
+            } else {
+                messageError = 'Internal Server Error';
             }
+            alert(messageError);
         }
     }
 }

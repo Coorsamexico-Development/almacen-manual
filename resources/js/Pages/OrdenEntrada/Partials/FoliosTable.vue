@@ -34,22 +34,20 @@ const filters = reactive({ search: null, field: null, direction: null });
 
 
 const getFoliosOrdenEntrada = async () => {
-    if (props.ordenEntrada.id !== -1) {
-        try {
-            const response = await axios.get(route('ordenes-entradas.folios.index', props.ordenEntrada.id));
-            folios.value = response.data.folios;
-        } catch (error) {
-            if (error.response) {
-                console.log(error.response);
-                let messageError = '';
-                const messageServer = error.response.data.message
-                if (error.response.status != 500) {
-                    messageError = messageServer;
-                } else {
-                    messageError = 'Internal Server Error';
-                }
-                alert(messageError);
+    try {
+        const response = await axios.get(route('ordenes-entradas.folios.index', props.ordenEntrada.id));
+        folios.value = response.data.folios;
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response);
+            let messageError = '';
+            const messageServer = error.response.data.message
+            if (error.response.status != 500) {
+                messageError = messageServer;
+            } else {
+                messageError = 'Internal Server Error';
             }
+            alert(messageError);
         }
     }
 }
@@ -126,7 +124,6 @@ const selectedRow = (event, folio) => {
 // En Modal
 
 watchEffect(() => {
-    console.log("GET PETICION");
     if (props.ordenEntrada.id !== -1) {
         getFoliosOrdenEntrada();
     }

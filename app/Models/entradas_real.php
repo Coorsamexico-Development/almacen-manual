@@ -15,4 +15,9 @@ class entradas_real extends Model
         'cantidad',
         'disponible',
     ];
+
+    public function productosTarimas()
+    {
+        return $this->hasMany(productos_tarimas::class, 'entradas_real_id');
+    }
 }

@@ -4,13 +4,11 @@ import { Inertia } from '@inertiajs/inertia';
 import { pickBy, throttle } from 'lodash';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DataTable from '../../Components/DataTable.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SpinProgress from '../../Components/SpinProgress.vue';
-import InfoButton from '../../Components/InfoButton.vue';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import SearchInput from '@/Components/SearchInput.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import EntradasModal from './Partials/EntradasModal.vue';
 import Pagination from '../../Components/Pagination.vue';
 import { useForm } from '@inertiajs/inertia-vue3';
@@ -19,6 +17,10 @@ const props = defineProps({
     filters: {
         type: Object,
         required: true
+    },
+    tarimaExpress: {
+        type: Object,
+        required: true,
     },
     tarimas: {
         type: Object,
@@ -90,6 +92,7 @@ watch(params, throttle(function () {
                             <div class="flex gap-2">
                                 <SecondaryButton @click="createTarima()">
                                     <span class="mr-2">Nueva Tarima</span>
+                                    <SpinProgress :inprogress="form.processing" />
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
                                         viewBox="0 0 16 16">
                                         <path
@@ -108,6 +111,15 @@ watch(params, throttle(function () {
                                         </li>
                                     </ul>
                                 </ActionMessage>
+                                <SecondaryButton @click="showTarimastarimas(tarimaExpress)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
+                                        viewBox="0 0 16 16">
+                                        <path
+                                            d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09zM4.157 8.5H7a.5.5 0 0 1 .478.647L6.11 13.59l5.732-6.09H9a.5.5 0 0 1-.478-.647L9.89 2.41 4.157 8.5z" />
+                                    </svg>
+                                    <span class="ml-2">SALIDA EXPRESS</span>
+
+                                </SecondaryButton>
                             </div>
 
                         </template>
@@ -131,6 +143,13 @@ watch(params, throttle(function () {
                                         </template>
                                     </span>
                                 </th>
+
+                                <th scope="col"
+                                    class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
+                                    <span>
+                                        FECHA DE CREACION
+                                    </span>
+                                </th>
                                 <th scope="col"
                                     class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
                                     PRODUCTOS
@@ -148,16 +167,18 @@ watch(params, throttle(function () {
                                 <th scope="col"
                                     class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
                                     <span>
-                                        FECHA DE CREACION
+                                        AÑADIR PRODUCTO
                                     </span>
                                 </th>
                             </tr>
                         </template>
                         <template #table-body>
                             <tr v-for="(tarima, index) in tarimas.data" :key="index" class="text-sm text-gray-500">
-
                                 <td class="px-2 py-1 whitespace-nowrap">
                                     {{ tarima.name }}
+                                </td>
+                                <td class="px-2 py-1 whitespace-nowrap">
+                                    {{ tarima.created_at }}
                                 </td>
                                 <td class="px-2 py-1 whitespace-nowrap">
                                     <SecondaryButton @click="showTarimastarimas(tarima)">
@@ -188,7 +209,16 @@ watch(params, throttle(function () {
                                     </SecondaryButton>
                                 </td>
                                 <td class="px-2 py-1 whitespace-nowrap">
-                                    {{ tarima.created_at }}
+                                    <PrimaryButton @click="showTarimastarimas(tarima)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
+                                            viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                            <path
+                                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                        </svg>
+                                        <span class="ml-2">PRODUCTOS</span>
+                                    </PrimaryButton>
                                 </td>
                             </tr>
                         </template>
