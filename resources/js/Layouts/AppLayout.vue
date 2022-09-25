@@ -58,7 +58,10 @@ const logout = () => {
                                 </NavLink>
                                 <NavLink :href="route('ordenes-entrada.index')"
                                     :active="route().current('ordenes-entrada.index')">
-                                    Entarimado
+                                    Entradas
+                                </NavLink>
+                                <NavLink :href="route('entradas.index')" :active="route().current('entradas.index')">
+                                    Entrarimado
                                 </NavLink>
                             </div>
                         </div>
@@ -217,6 +220,9 @@ const logout = () => {
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('ordenes-entrada.index')"
                             :active="route().current('ordenes-entrada.index')">
+                            Entarimado
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('entradas.index')" :active="route().current('entradas.index')">
                             Entarimado
                         </ResponsiveNavLink>
                     </div>

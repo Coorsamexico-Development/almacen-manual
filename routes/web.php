@@ -48,6 +48,7 @@ Route::middleware([
     });
     // Rutas Ordendes de Entrada
     Route::apiResource('ordenes-entrada', OrdenesEntradaController::class)->only('index', 'store');
+    Route::apiResource('entradas', EntradaController::class)->only('index', 'store');
 
     // Ruta folios en una Orden de Entrada
     Route::get('ordenes-entrada/{ordenEntrada}/folios', [FolioController::class, 'index'])->name('ordenes-entradas.folios.index');

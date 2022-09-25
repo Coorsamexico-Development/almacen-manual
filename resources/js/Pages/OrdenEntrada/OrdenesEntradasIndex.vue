@@ -60,7 +60,6 @@ const importEntradas = () => {
     })
 };
 const sort = (field) => {
-    console.log('field');
     params.field = field;
     params.direction = params.direction === "asc" ? "desc" : "asc";
 };
@@ -78,7 +77,6 @@ const closeModalFolio = () => {
 
 watch(params, throttle(function () {
     let paramsClear = pickBy(params);
-    console.log("order", paramsClear);
     Inertia.get(route("ordenes-entrada.index"), paramsClear, {
         replace: true,
         preserveScroll: true,
@@ -89,10 +87,10 @@ watch(params, throttle(function () {
 </script>
 
 <template>
-    <AppLayout title="Entarimado">
+    <AppLayout title="Entradas">
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Entarimado
+                Orden de Entradas
             </h2>
         </template>
 
