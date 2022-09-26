@@ -26,12 +26,16 @@ class EntradaController extends Controller
             'productos.name as producto',
         )
             ->selectRaw('ifnull(sum(entradas_reals.disponible),0) as cantidad_disponible')
+            ->selectRaw('ifnull(sum(productos_tarimas.cant_disponible),0) as cantidad_tarima')
             ->join('folios', 'entradas.folio_id', '=', 'folios.id')
             ->join('productos', 'entradas.producto_id', '=', 'productos.id')
-            ->join('entradas_reals', function ($join) {
-                $join->on('entradas.id', '=', 'entradas_reals.entrada_id')
-                    ->on('entradas_reals.disponible', '>', DB::raw(0));
+            ->join('entradas_reals', 'entradas.id', '=', 'entradas_reals.entrada_id')
+            ->leftJoin('productos_tarimas', function ($join) use ($tarima) {
+                $join->on('entradas_reals.id', '=', 'productos_tarimas.entradas_real_id')
+                    ->on('productos_tarimas.tarima_id', '=', DB::raw($tarima->id));
             })
+            ->where('entradas_reals.disponible', '>', 0)
+            ->orWhereNotNull('productos_tarimas.id')
             ->groupBy(
                 'entradas.id',
                 'folios.name',

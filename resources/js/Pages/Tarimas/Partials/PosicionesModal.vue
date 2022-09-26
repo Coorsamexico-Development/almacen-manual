@@ -6,6 +6,7 @@ import SearchInput from '../../../Components/SearchInput.vue';
 import { throttle } from 'lodash';
 import DataTable from '../../../Components/DataTable.vue';
 import PaginationAxios from '../../../Components/PaginationAxios.vue';
+import ActionMessage from '@/Components/ActionMessage.vue';
 
 
 const emit = defineEmits(['close', 'messageError', 'showImagesTarima']);
