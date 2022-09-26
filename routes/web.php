@@ -5,6 +5,7 @@ use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\EntradasRealController;
 use App\Http\Controllers\FolioController;
 use App\Http\Controllers\NivelController;
+use App\Http\Controllers\OcController;
 use App\Http\Controllers\OrdenesEntradaController;
 use App\Http\Controllers\PosicionController;
 use App\Http\Controllers\RackController;
@@ -73,4 +74,9 @@ Route::middleware([
     // Import Entradas
     Route::get('ordenes-entradas/export/example', [OrdenesEntradaController::class, 'exportExample'])->name('ordenes-entradas.export.example');
     Route::post('ordenes-entradas/import', [OrdenesEntradaController::class, 'importEntradas'])->name('ordenes-entradas.import');
+
+    // Ocs
+    Route::apiResource('ocs', OcController::class)->only('index');
+    Route::get('ocs/export/example', [OcController::class, 'exportExample'])->name('ocs.export.example');
+    Route::post('ocs/import', [OcController::class, 'import'])->name('ocs.import');
 });
