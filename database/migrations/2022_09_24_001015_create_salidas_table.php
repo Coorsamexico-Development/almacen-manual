@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('salidas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('oc_id')->constrained('ocs');
+            $table->foreignId('oc_id')->constrained('ocs')->cascadeOnDelete();
             $table->foreignId('producto_id')->constrained('productos');
             $table->smallInteger('solicitado')->default(0);
             $table->smallInteger('surtido')->default(0);

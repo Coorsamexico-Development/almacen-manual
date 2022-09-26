@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('productos_tarima_salidas_real', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('salida_id')->constrained('salidas');
+            $table->foreignId('salida_id')->constrained('salidas')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('productos_tarima_id')->constrained('productos_tarimas');
+            $table->foreignId('productos_tarima_id')->constrained('productos_tarimas')->cascadeOnDelete();
             $table->integer('cantidad');
             $table->timestamps();
         });

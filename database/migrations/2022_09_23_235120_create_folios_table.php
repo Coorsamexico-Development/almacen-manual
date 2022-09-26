@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('folios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ordenes_entrada_id')->constrained('ordenes_entradas');
+            $table->foreignId('ordenes_entrada_id')->constrained('ordenes_entradas')->cascadeOnDelete();
             $table->string('name', 100);
+            $table->set('status', ['ABIERTO', 'EN PROCESO', 'CERRADO'])->default('ABIERTO');
             $table->timestamps();
         });
     }
