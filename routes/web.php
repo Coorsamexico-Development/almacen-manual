@@ -40,6 +40,8 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
+    //Rutas users
+    Route::apiResource('users', UserController::class)->except('show');
     // Rutas Racks
     Route::apiResource('racks', RackController::class)->only('index', 'store');
     Route::name('racks.')->group(function () {
