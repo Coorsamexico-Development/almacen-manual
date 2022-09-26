@@ -8,6 +8,7 @@ use App\Http\Controllers\NivelController;
 use App\Http\Controllers\OrdenesEntradaController;
 use App\Http\Controllers\PosicionController;
 use App\Http\Controllers\RackController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\TarimaController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redirect;

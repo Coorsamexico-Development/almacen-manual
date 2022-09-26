@@ -28,6 +28,7 @@ class User extends Authenticatable
         'nombre',
         'ap_paterno',
         'ap_materno',
+        'rol_id',
         'email',
         'password',
     ];

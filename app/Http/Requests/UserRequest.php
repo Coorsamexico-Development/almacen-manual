@@ -30,7 +30,7 @@ class UserRequest extends FormRequest
             'nombre' => ['required', 'max:60'],
             'ap_paterno' => ['required', 'max:60'],
             'ap_materno' => ['max:60'],
-            'role_id' => ['required', 'exists:roles,id'],
+            'rol_id' => ['required', 'exists:rols,id'],
             'password' => ['sometimes', 'required', 'max:12'],
         ];
     }

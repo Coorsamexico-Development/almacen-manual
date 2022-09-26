@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('ap_materno', 60)->nullable();
             $table->string('email')->unique();
             $table->foreignId('rol_id')->constrained('rols');
+            $table->boolean('active')->default(1);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

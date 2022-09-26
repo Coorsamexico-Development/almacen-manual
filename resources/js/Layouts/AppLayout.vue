@@ -63,6 +63,9 @@ const logout = () => {
                                 <NavLink :href="route('tarimas.index')" :active="route().current('tarimas.index')">
                                     Entrarimado
                                 </NavLink>
+                                <NavLink :href="route('users.index')" :active="route().current('users.index')">
+                                    Usuarios
+                                </NavLink>
                             </div>
                         </div>
 
