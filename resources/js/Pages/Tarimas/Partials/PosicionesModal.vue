@@ -1,19 +1,17 @@
-import DialogModal from '@/Components/DialogModal.vue';
 <script setup>
-import { reactive, ref, watch, watchEffect } from "@vue/runtime-core";
+import { reactive, ref, watch, watchEffect } from 'vue';
+import DialogModal from '@/Components/DialogModal.vue'
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SpinProgress from "../../../Components/SpinProgress.vue";
-import DialogModal from "@/Components/DialogModal.vue";
-import DataTable from "../../../Components/DataTable.vue";
-import SearchInput from "../../../Components/SearchInput.vue";
-import InputError from "../../../Components/InputError.vue";
-import TextInput from "../../../Components/TextInput.vue";
-import PaginationAxios from "../../../Components/PaginationAxios.vue";
-import { throttle } from 'lodash'
-import DangerButton from "../../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/DangerButton.vue";
+import SearchInput from '../../../Components/SearchInput.vue';
+import { throttle } from 'lodash';
+import DataTable from '../../../Components/DataTable.vue';
+import PaginationAxios from '../../../Components/PaginationAxios.vue';
 
-const emit = defineEmits(["close", "messageError"]);
+
+const emit = defineEmits(['close', 'messageError', 'showImagesTarima']);
+const productoSelected = ref({ id: -1 })
+
+
 const props = defineProps({
     show: {
         type: Boolean,
@@ -25,16 +23,15 @@ const props = defineProps({
     },
 });
 
-const entradas = ref({ data: [] });
+const posicions = ref({ data: [] });
+const messageUpdate = ref('');
 const filters = reactive({ search: null, field: null, direction: null });
 
-
-
-
-const getEntradas = async () => {
+const getPosiciones = async () => {
     try {
-        const response = await axios.get(route('entradas.index', props.tarima.id));
-        entradas.value = response.data.entradas;
+        const response = await axios.get(route('posiciones-disponible.index'));
+        posicions.value = response.data.posicions;
+
     } catch (error) {
         if (error.response) {
             console.log(error.response);
@@ -53,16 +50,17 @@ const getEntradas = async () => {
 
 
 
-const searchEntradas = async () => {
+const searchPosiciones = async () => {
     try {
-        const response = await axios.get(route('entradas.index', props.tarima.id), {
+        const response = await axios.get(route('posiciones-disponible.index'), {
             params: {
                 search: filters.search,
                 field: filters.field,
                 direction: filters.direction
             }
         });
-        entradas.value = response.data.entradas;
+        posicions.value = response.data.posicions;
+
     } catch (error) {
         if (error.response) {
             console.log(error.response);
@@ -80,7 +78,7 @@ const searchEntradas = async () => {
 
 const loadPage = async (page) => {
     try {
-        const response = await axios.get(route('entradas.index', props.tarima.id), {
+        const response = await axios.get(route('posiciones-disponible.index'), {
             params: {
                 search: filters.search,
                 field: filters.field,
@@ -88,7 +86,7 @@ const loadPage = async (page) => {
                 page: page
             }
         });
-        entradas.value = response.data.entradas;
+        posicions.value = response.data.posicions;
     } catch (error) {
         if (error.response) {
             console.log(error.response);
@@ -108,18 +106,18 @@ const sort = (field) => {
     filters.direction = filters.direction === "asc" ? "desc" : "asc";
 }
 
-
-const storeCanitdadTarima = async (entrada) => {
+const changePosition = async (posicion) => {
     try {
-        const response = await axios.post(route('tarimas.entradas-productos.store', props.tarima.id), {
-            entrada_id: entrada.id,
-            cantidad: entrada.new_cantidad,
+        const response = await axios.put(route('tarimas.posiciones.update', props.tarima.id), {
+            posicion_id: posicion.id,
 
         });
-        entrada.cantidad_disponible = parseInt(entrada.cantidad_disponible) - parseInt(entrada.new_cantidad)
-        props.tarima.canitdad_cajas = parseInt(props.tarima.canitdad_cajas) + parseInt(entrada.new_cantidad)
-        entrada.new_cantidad = '';
-        entrada.error = '';
+        messageUpdate.value = response.data.message;
+        props.tarima.posicion = posicion.name;
+        searchPosiciones();
+        setTimeout(() => {
+            messageUpdate.value = '';
+        }, 400)
     } catch (error) {
         console.log(error);
         if (error.response) {
@@ -137,68 +135,44 @@ const storeCanitdadTarima = async (entrada) => {
 }
 
 
-const destroyCanitdadTarima = async (entrada) => {
-    try {
-        const response = await axios.delete(route('tarimas.entradas-productos.destroy', props.tarima.id), {
-            params: {
-                entrada_id: entrada.id,
-                cantidad: entrada.new_cantidad,
-            }
-        });
-        entrada.cantidad_disponible = parseInt(entrada.cantidad_disponible) + parseInt(entrada.new_cantidad)
-        props.tarima.canitdad_cajas = parseInt(props.tarima.canitdad_cajas) - parseInt(entrada.new_cantidad)
-        entrada.new_cantidad = '';
-        entrada.error = '';
-    } catch (error) {
-        console.log(error);
-        if (error.response) {
-            console.log(error.response);
-            let messageError = '';
-            const messageServer = error.response.data.message
-            if (error.response.status != 500) {
-                messageError = messageServer;
-            } else {
-                messageError = 'Internal Server Error';
-            }
-            entrada.error = messageError;
-        }
-    }
-}
+const close = () => {
+    emit('close');
+};
 
-
-
-// En Modal
 
 watchEffect(() => {
     if (props.tarima.id !== -1 && props.show) {
-        getEntradas();
+        getPosiciones();
     }
 })
 
 watch(filters, throttle(function () {
     if (props.tarima.id !== -1)
-        searchEntradas();
+        searchPosiciones();
 }, 150))
-
-
-
-const close = () => {
-    emit('close');
-}
 
 
 
 </script>
 
+
 <template>
-    <DialogModal :show="show" maxWidth="4xl" @close="close()">
+    <DialogModal :show="show" maxWidth="6xl" @close="close()">
         <template #title>
-            <h2 class="font-semibold text-md">
-                Lista de Productos Ingresados
+            <div class="flex gap-2 px-2">
+                <h1 class="font-semibold text-gray-600 text-md">
+                    Productos
+                </h1>
                 <span class="px-2 text-white bg-gray-700 rounded">
                     {{tarima.name}}
                 </span>
-            </h2>
+                <span class="px-2 text-white bg-yellow-700 rounded">
+                    {{tarima.posicion}}
+                </span>
+                <ActionMessage :on="messageUpdate !==''" class="ml-2 text-green-500">
+                    {{messageUpdate}}
+                </ActionMessage>
+            </div>
         </template>
         <template #content>
             <div class="sm:rounded-lg">
@@ -213,9 +187,9 @@ const close = () => {
                         <tr class="text-center">
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('folio')">
-                                    FOLIO
-                                    <template v-if="filters.field === 'folio'">
+                                <span class="" @click="sort('rack')">
+                                    RACK
+                                    <template v-if="filters.field === 'rack'">
                                         <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                             class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path
@@ -231,9 +205,9 @@ const close = () => {
                             </th>
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('ean')">
-                                    EAN
-                                    <template v-if="filters.field === 'ean'">
+                                <span class="" @click="sort('posicions.name')">
+                                    POSICION
+                                    <template v-if="filters.field === 'posicions.name'">
                                         <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                             class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path
@@ -249,9 +223,9 @@ const close = () => {
                             </th>
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('producto')">
-                                    PRODUCTO
-                                    <template v-if="filters.field === 'producto'">
+                                <span class="" @click="sort('status')">
+                                    STATUS
+                                    <template v-if="filters.field === 'status'">
                                         <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                             class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path
@@ -267,9 +241,9 @@ const close = () => {
                             </th>
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('canitdad_disponible')">
-                                    CANTIDAD DISPONIBLE
-                                    <template v-if="filters.field === 'canitdad_disponible'">
+                                <span class="" @click="sort('nivel')">
+                                    NIVEL
+                                    <template v-if="filters.field === 'nivel'">
                                         <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                             class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path
@@ -283,72 +257,71 @@ const close = () => {
                                     </template>
                                 </span>
                             </th>
+                            <th scope="col"
+                                class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
+                                <span class="" @click="sort('columna')">
+                                    COLUMNA
+                                    <template v-if="filters.field === 'columna'">
+                                        <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
+                                            class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path
+                                                d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
+                                        </svg>
+                                        <svg v-if="filters.direction === 'desc'" xmlns="http://www.w3.org/2000/svg"
+                                            class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path
+                                                d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
+                                        </svg>
+                                    </template>
+                                </span>
+                            </th>
+
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
                                 <span>
-                                    AÑADIR
+                                    ACTION
                                 </span>
                             </th>
                         </tr>
                     </template>
                     <template #table-body>
-                        <tr v-for="(entrada, index) in entradas.data" :key="index" class="text-sm text-gray-500">
+                        <tr v-for="(posicion, index) in posicions.data" :key="index" class="text-sm text-gray-500">
 
                             <td class="px-2 py-1 whitespace-nowrap">
-                                {{ entrada.folio }}
-                            </td>
-                            <td class="px-2 py-1 whitespace-nowrap">
-                                {{ entrada.ean }}
-                            </td>
-                            <td class="px-2 py-1 whitespace-nowrap">
-                                {{ entrada.producto }}
-                            </td>
-                            <td class="px-2 py-1 whitespace-nowrap">
-                                <span class="px-2 py-1 text-white bg-yellow-600 rounded">
-
-                                    {{ entrada.cantidad_disponible }}
+                                <span class="px-2 py-1 text-white bg-red-800 rounded">
+                                    {{ posicion.rack }}
                                 </span>
                             </td>
                             <td class="px-2 py-1 whitespace-nowrap">
-                                <div class="flex">
-
-                                    <div class="w-1/2">
-
-                                        <TextInput class="w-full" type="number" v-model="entrada.new_cantidad"
-                                            min="1" />
-                                        <InputError :message="entrada.error" />
-                                    </div>
-                                    <div class="w-1/2">
-
-                                        <SecondaryButton class="py-1" @click="storeCanitdadTarima(entrada)">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
-                                                viewBox="0 0 16 16">
-                                                <path
-                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                <path
-                                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-                                            </svg>
-                                        </SecondaryButton>
-                                        <br />
-                                        <DangerButton class="py-1" @click="destroyCanitdadTarima(entrada)">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
-                                                viewBox="0 0 16 16">
-                                                <path
-                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
-                                            </svg>
-                                        </DangerButton>
-                                    </div>
-                                </div>
+                                {{ posicion.name }}
+                            </td>
+                            <td class="px-2 py-1 whitespace-nowrap">
+                                {{ posicion.status }}
+                            </td>
+                            <td class="px-2 py-1 whitespace-nowrap">
+                                {{ posicion.nivel }}
+                            </td>
+                            <td class="px-2 py-1 whitespace-nowrap">
+                                {{ posicion.columna }}
+                            </td>
+                            <td class="px-2 py-1 whitespace-nowrap">
+                                <SecondaryButton class="py-1" @click="changePosition(posicion)">
+                                    MOVER
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5z" />
+                                        <path fill-rule="evenodd"
+                                            d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0v-5z" />
+                                    </svg>
+                                </SecondaryButton>
                             </td>
                         </tr>
                     </template>
 
                 </DataTable>
-                <PaginationAxios :pagination="entradas" @loadPage="loadPage" />
+                <PaginationAxios :pagination="posicions" @loadPage="loadPage" />
             </div>
         </template>
-
         <template #footer>
             <div class="mx-2 my-2">
                 <SecondaryButton @click="close()">

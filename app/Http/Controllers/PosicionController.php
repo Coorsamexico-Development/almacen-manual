@@ -17,15 +17,6 @@ class PosicionController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -38,48 +29,39 @@ class PosicionController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\posicion  $posicion
-     * @return \Illuminate\Http\Response
-     */
-    public function show(posicion $posicion)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\posicion  $posicion
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(posicion $posicion)
+    public function indexDisponibles(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'direction' => 'in:desc,asc'
+        ]);
+        $entradas = posicion::select(
+            'posicions.id',
+            'posicions.name',
+            'status_posicions.name as status',
+            'nivels.name as nivel',
+            'columnas.name as columna',
+            'racks.name as rack',
+        )
+            ->join('status_posicions', 'posicions.status_posicion_id', '=', 'status_posicions.id')
+            ->join('nivels', 'posicions.nivel_id', '=', 'nivels.id')
+            ->join('columnas', 'posicions.columna_id', '=', 'columnas.id')
+            ->join('racks', 'nivels.rack_id', '=', 'racks.id')
+            ->where('posicions.status_posicion_id', '=', 1);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\posicion  $posicion
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, posicion $posicion)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\posicion  $posicion
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(posicion $posicion)
-    {
-        //
+        if (request()->has('search')) {
+            $search =  strtr(request('search'), array("'" => "\\'", "%" => "\\%"));
+            $entradas->where('posicions.name', 'like', '%' . $search . '%')
+                ->orWhere('racks.name', 'like', '%' . $search . '%');
+        }
+        if (request()->has('field')) {
+            $entradas->orderBy(request('field'), request('direction'));
+        } else {
+            $entradas->orderBy('posicions.name', 'asc');
+        }
+        return response()->json([
+            'posicions' =>  $entradas->paginate(20),
+            'filters' => request(['search', 'field', 'direction'])
+        ]);
     }
 }

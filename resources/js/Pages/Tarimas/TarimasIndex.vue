@@ -13,6 +13,7 @@ import EntradasModal from './Partials/EntradasModal.vue';
 import Pagination from '../../Components/Pagination.vue';
 import { useForm } from '@inertiajs/inertia-vue3';
 import ProductosTarimaModal from './Partials/ProductosTarimaModal.vue';
+import PosicionesModal from './Partials/PosicionesModal.vue';
 
 const props = defineProps({
     filters: {
@@ -40,6 +41,7 @@ const params = reactive({
 const tarima = ref({ id: -1 });
 const showingEntradas = ref(false);
 const showingProductos = ref(false);
+const showingPosiciones = ref(false);
 
 
 const form = useForm();
@@ -68,9 +70,18 @@ const showProductos = (tarimaselect) => {
     showingProductos.value = true;
 }
 
+const showngPosiciones = (tarimaselect) => {
+    tarima.value = tarimaselect;
+    showingPosiciones.value = true;
+}
+
 const closeModalProductos = () => {
     tarima.value = { id: -1 };
     showingProductos.value = false;
+}
+const closeModalPosiciones = () => {
+    tarima.value = { id: -1 };
+    showingPosiciones.value = false;
 }
 
 watch(params, throttle(function () {
@@ -207,7 +218,7 @@ watch(params, throttle(function () {
                                     </span>
                                 </td>
                                 <td class="px-2 py-1 whitespace-nowrap">
-                                    <SecondaryButton @click="showTarimas(tarima)">
+                                    <SecondaryButton @click="showngPosiciones(tarima)">
                                         <span class="mr-2" v-if="tarima.posicion !== null">{{tarima.posicion}}</span>
                                         <span class="mr-2" v-else>SIN POSICION</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4"
@@ -241,5 +252,6 @@ watch(params, throttle(function () {
         </div>
         <EntradasModal :show="showingEntradas" :tarima="tarima" @close="showingEntradas = false" />
         <ProductosTarimaModal :show="showingProductos" :tarima="tarima" @close="closeModalProductos()" />
+        <PosicionesModal :show="showingPosiciones" :tarima="tarima" @close="closeModalPosiciones()" />
     </AppLayout>
 </template>

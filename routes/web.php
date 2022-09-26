@@ -6,6 +6,7 @@ use App\Http\Controllers\EntradasRealController;
 use App\Http\Controllers\FolioController;
 use App\Http\Controllers\NivelController;
 use App\Http\Controllers\OrdenesEntradaController;
+use App\Http\Controllers\PosicionController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\TarimaController;
 use Illuminate\Foundation\Application;
@@ -51,9 +52,13 @@ Route::middleware([
     // Entarimado
     Route::apiResource('tarimas', TarimaController::class)->only('index', 'store');
     Route::post('tarimas/{tarima}/entrdas-productos', [TarimaController::class, 'storeEntradaProducto'])->name('tarimas.entradas-productos.store');
+
     Route::delete('tarimas/{tarima}/entrdas-productos', [TarimaController::class, 'destroyEntradaProducto'])->name('tarimas.entradas-productos.destroy');
     Route::get('tarimas/{tarima}/productos', [TarimaController::class, 'productoIndex'])->name('tarimas.productos.index');
     Route::get('entradas/{tarima}', [EntradaController::class, 'index'])->name('entradas.index');
+    //Posiciones
+    Route::get('posiciones-disponibles', [PosicionController::class, 'indexDisponibles'])->name('posiciones-disponible.index');
+    Route::put('tarimas/{tarima}/posiciones', [TarimaController::class, 'updatePosicion'])->name('tarimas.posiciones.update');
 
     // Ruta folios en una Orden de Entrada
     Route::get('ordenes-entrada/{ordenEntrada}/folios', [FolioController::class, 'index'])->name('ordenes-entradas.folios.index');

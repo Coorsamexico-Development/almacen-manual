@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\entrada;
 use App\Models\entradas_real;
+use App\Models\posicion;
 use App\Models\producto;
 use App\Models\productos_tarimas;
 use App\Models\tarima;
@@ -316,5 +317,37 @@ class TarimaController extends Controller
             'productos' =>  $productos->paginate(20),
             'filters' => request(['search', 'field', 'direction'])
         ]);
+    }
+
+    public function updatePosicion(tarima $tarima, Request $request)
+    {
+        $request->validate([
+            'posicion_id' => ['required', 'exists:posicions,id']
+        ]);
+
+        $posicion = $tarima->posiciones()->firstWhere('tarima_posicions.active', '=', 1);
+        try {
+            DB::beginTransaction();
+            if ($posicion !== null) {
+                $tarima->posiciones()->updateExistingPivot($posicion->id, [
+                    'active' => 0,
+                ]);
+                $posicion->status_posicion_id = 1;
+                $posicion->save();
+            }
+            $tarima->posiciones()->attach($request->posicion_id);
+            $posicion = posicion::find($request->posicion_id);
+            $posicion->status_posicion_id = 2;
+            $posicion->save();
+            DB::commit();
+            return response()->json([
+                'message' => 'Guardado'
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            @throw ValidationException::withMessages([
+                'posicion_id' => $e->getMessage()
+            ]);
+        }
     }
 }
