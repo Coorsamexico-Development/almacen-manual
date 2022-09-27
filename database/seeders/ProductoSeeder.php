@@ -16,23 +16,23 @@ class ProductoSeeder extends Seeder
     public function run()
     {
         DB::table('productos')->insert([
-            'name' => 'Producto 1 ',
+            'name' => 'Papás Fritas',
             'ean' => '7370'
         ]);
         DB::table('productos')->insert([
-            'name' => 'Producto 2',
+            'name' => 'Refrescos',
             'ean' => '3614'
         ]);
         DB::table('productos')->insert([
-            'name' => 'Producto 3 ',
+            'name' => 'Gomitas',
             'ean' => '3622'
         ]);
         DB::table('productos')->insert([
-            'name' => 'Producto 1 ',
+            'name' => 'Palomitas',
             'ean' => '7352'
         ]);
         DB::table('productos')->insert([
-            'name' => 'Producto 4 ',
+            'name' => 'Chocolate Amargo',
             'ean' => '8005'
         ]);
     }

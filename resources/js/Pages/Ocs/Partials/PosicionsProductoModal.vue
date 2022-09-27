@@ -148,6 +148,8 @@ watch(filters, function () {
 
 const close = () => {
     emit('close');
+    posicions.value = { data: [] };
+
 };
 
 

@@ -98,7 +98,7 @@ class PosicionController extends Controller
             ->groupBy([
                 'posicions.id',
                 'posicions.name',
-                'tarima_posicions.tarima_id',
+                'tarima_posicions.tarima_id'
             ]);
 
         if (request()->has('search')) {
