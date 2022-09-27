@@ -11,7 +11,8 @@ class folio extends Model
 
     protected $fillable = [
         'ordenes_entrada_id',
-        'name'
+        'name',
+        'status'
     ];
 
     public function entradas()

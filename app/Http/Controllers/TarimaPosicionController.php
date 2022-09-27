@@ -37,49 +37,4 @@ class TarimaPosicionController extends Controller
     {
         //
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\tarima_posicion  $tarima_posicion
-     * @return \Illuminate\Http\Response
-     */
-    public function show(tarima_posicion $tarima_posicion)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\tarima_posicion  $tarima_posicion
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(tarima_posicion $tarima_posicion)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\tarima_posicion  $tarima_posicion
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, tarima_posicion $tarima_posicion)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\tarima_posicion  $tarima_posicion
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(tarima_posicion $tarima_posicion)
-    {
-        //
-    }
 }

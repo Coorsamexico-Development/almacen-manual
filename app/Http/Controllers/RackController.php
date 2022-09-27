@@ -45,6 +45,7 @@ class RackController extends Controller
 
             for ($i = 1; $i <= $totalCreate; $i++) {
                 $newRack['name'] = 'Rack ' . $totalRacks + $i;
+                $newRack['termino'] = 'R' . $totalRacks + $i;
                 $rack = Rack::create($newRack);
             }
             DB::commit();

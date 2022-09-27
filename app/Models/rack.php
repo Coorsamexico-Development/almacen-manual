@@ -10,7 +10,8 @@ class rack extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
+        'termino',
     ];
 
 

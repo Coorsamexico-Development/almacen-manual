@@ -150,7 +150,7 @@ class TarimaController extends Controller
             foreach ($entradasReales as $entradaReal) {
 
                 if ($entradaReal->disponible >= $cantidad) {
-                    $entradaReal->disponible = $entradaReal->cantidad - $cantidad;
+                    $entradaReal->disponible = $entradaReal->disponible - $cantidad;
                     $tarima->entradasReales()->attach([
                         $entradaReal->id =>
                         ['cant_disponible' => $cantidad, 'producto_id' => $entrada->producto_id, 'user_id' => Auth::id()]

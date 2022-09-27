@@ -44,7 +44,7 @@ class NivelController extends Controller
                 //Store Posiciones de acuerdo a las columnas existentes
                 foreach ($columnas as $columna) {
                     posicion::create([
-                        'name' => $nivel->name . $columna->name,
+                        'name' => $rack->termino . '-' .  $nivel->name . $columna->name,
                         'nivel_id' => $nivel->id,
                         'columna_id' => $columna->id,
                         'status_posicion_id' => 1

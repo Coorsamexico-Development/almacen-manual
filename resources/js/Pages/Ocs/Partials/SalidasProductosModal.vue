@@ -7,9 +7,9 @@ import SearchInput from '../../../Components/SearchInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PaginationAxios from '../../../Components/PaginationAxios.vue';
 import { throttle } from 'lodash';
+import PosicionsProductoModal from './PosicionsProductoModal.vue';
 
 const emit = defineEmits(['close', 'messageError', 'showImagesTarima']);
-const folioSelected = ref({ id: -1 })
 
 
 const props = defineProps({
@@ -26,6 +26,8 @@ const props = defineProps({
 
 const salidas = ref({ data: [] });
 const filters = reactive({ search: null, field: null, direction: null });
+const showingPosicions = ref(false);
+const salidaSeleted = ref({ id: -1 });
 
 
 
@@ -111,6 +113,12 @@ const sort = (field) => {
 
 // En Modal
 
+const showPosicionsProducto = (salida) => {
+    salidaSeleted.value = salida;
+    showingPosicions.value = true;
+}
+//
+
 watchEffect(() => {
     if (props.oc.id !== -1 && props.show) {
         getSalidas();
@@ -126,12 +134,8 @@ watch(filters, throttle(function () {
 
 const close = () => {
     emit('close');
-    folioSelected.value = { id: -1 }
 };
 
-const selectFolio = (folio) => {
-    folioSelected.value = folio;
-}
 
 </script>
 
@@ -258,7 +262,7 @@ const selectFolio = (folio) => {
                                 </span>
                             </td>
                             <td class="px-2 py-1 whitespace-nowrap">
-                                <SecondaryButton class="py-1">
+                                <SecondaryButton class="py-1" @click="showPosicionsProducto(salida)">
 
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-1"
                                         viewBox="0 0 16 16">
@@ -267,7 +271,7 @@ const selectFolio = (folio) => {
                                         <path
                                             d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                                     </svg>
-                                    SUBTIRSE
+                                    SURTIRSE
                                 </SecondaryButton>
                             </td>
                         </tr>
@@ -276,6 +280,8 @@ const selectFolio = (folio) => {
                 </DataTable>
                 <PaginationAxios :pagination="salidas" @loadPage="loadPage" />
             </div>
+            <PosicionsProductoModal :show="showingPosicions" :salida="salidaSeleted"
+                @close="showingPosicions = false" />
         </template>
         <template #footer>
             <div class="mx-2 my-2">
