@@ -54,34 +54,6 @@ class OcController extends Controller
         ]);
     }
 
-
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\oc  $oc
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, oc $oc)
-    {
-        //
-    }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -132,5 +104,37 @@ class OcController extends Controller
             );
         }
         return redirect()->back();
+    }
+
+
+    public function indexSalidas(oc $oc, Request $request)
+    {
+        $request->validate([
+            'direction' => 'in:desc,asc'
+        ]);
+        $salidas = $oc->salidas()->select(
+            'salidas.id',
+            'salidas.producto_id',
+            'productos.ean',
+            'productos.name as producto',
+            'salidas.solicitado',
+            'salidas.surtido',
+        )
+            ->join('productos', 'salidas.producto_id', '=', 'productos.id');
+
+        if (request()->has('search')) {
+            $search =  strtr(request('search'), array("'" => "\\'", "%" => "\\%"));
+            $salidas->where('productos.name', 'like', '%' . $search . '%')
+                ->orWhere('productos.ean', 'like', '%' . $search . '%');
+        }
+        if (request()->has('field')) {
+            $salidas->orderBy(request('field'), request('direction'));
+        } else {
+            $salidas->orderBy('salidas.created_at', 'desc');
+        }
+        return response()->json([
+            'salidas' =>  $salidas->paginate(10),
+            'filters' => request(['search', 'field', 'direction'])
+        ]);
     }
 }

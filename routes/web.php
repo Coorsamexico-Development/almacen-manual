@@ -78,4 +78,5 @@ Route::middleware([
     Route::apiResource('ocs', OcController::class)->only('index');
     Route::get('ocs/export/example', [OcController::class, 'exportExample'])->name('ocs.export.example');
     Route::post('ocs/import', [OcController::class, 'import'])->name('ocs.import');
+    Route::get('ocs/{oc}/salidas', [OcController::class, 'indexSalidas'])->name('ocs.salidas.index');
 });
