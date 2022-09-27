@@ -2,9 +2,9 @@
 import { reactive, watch } from 'vue';
 import { throttle, pickBy } from 'lodash';
 
-import DataTable from '../../../Components/DataTable.vue';
-import PrimaryButton from '@/Components/Button.vue';
-import InputSearch from '@/Components/InputSearch.vue';
+import DataTable from '@/Components/DataTable.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SearchInput from '@/Components/SearchInput.vue';
 import SwitchButton from '@/Components/SwitchButton.vue';
 import InfoButton from '@/Components/InfoButton.vue';
 import { Inertia } from '@inertiajs/inertia';
@@ -60,7 +60,7 @@ watch(params, throttle(function () {
                         clip-rule="evenodd" />
                 </svg>Nuevo
             </PrimaryButton>
-            <InputSearch v-model="params.search" />
+            <SearchInput v-model="params.search" />
         </template>
         <template #table-header>
             <tr class="text-center">
@@ -154,7 +154,7 @@ watch(params, throttle(function () {
                     {{ user.name }}
                 </td>
                 <td class="px-2 py-1 whitespace-nowrap">
-                    {{ user.role }}
+                    {{ user.rols }}
                 </td>
                 <td class="px-2 py-1 whitespace-nowrap">
                     <div class="flex items-center justify-center">

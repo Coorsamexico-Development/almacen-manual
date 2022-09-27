@@ -23,10 +23,10 @@ class UserController extends Controller
         ]);
 
 
-        $users = User::select('users.*', 'roles.name as role')
-            ->join('roles', 'users.role_id', '=', 'roles.id');
+        $users = User::select('users.*', 'rols.name as rols')
+            ->join('rols', 'users.rol_id', '=', 'rols.id');
 
-        $roles = rol::select('roles.id', 'roles.name')->get();
+        $roles = rol::select('rols.id', 'rols.name')->get();
 
 
         if (request()->has('search')) {
@@ -35,7 +35,7 @@ class UserController extends Controller
                 ->orWhere('users.ap_paterno', 'like', '%' . $search . '%')
                 ->orWhere('users.ap_materno', 'like', '%' . $search . '%')
                 ->orWhere('users.name', 'like', '%' . $search . '%')
-                ->orWhere('roles.name', 'like', '%' . $search . '%');
+                ->orWhere('rols.name', 'like', '%' . $search . '%');
         }
 
         if (request()->has('field')) {
@@ -58,6 +58,7 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $newUser = $request->validated();
+        $newUser['active'] = 1;
         $newUser['password'] = Hash::make($request->password);
         User::create($newUser);
         return redirect()->back();

@@ -4,7 +4,7 @@ import UsersTable from './Partials/UsersTable.vue';
 import Pagination from '../../Components/Pagination.vue';
 import { ref } from 'vue';
 import UserModal from './Modals/UserModal.vue';
-import ErrorModal from '../../Components/ErrorModal.vue';
+
 
 defineProps({
     laravelUsers: {
@@ -91,8 +91,6 @@ const deleteUser = async (user) => {
         </div>
         <UserModal :show="showingModalUser" :user="userSelect" :roles="laravelRoles" :type-form="typeForm"
             @close="closeModalUser" />
-        <ErrorModal :show="showingModalError" @close="showError">
-            {{ messageError }}
-        </ErrorModal>
+      
     </AppLayout>
 </template>

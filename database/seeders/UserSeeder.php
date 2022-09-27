@@ -23,6 +23,7 @@ class UserSeeder extends Seeder
             'ap_paterno' => 'Sistemas',
             'ap_materno' => 'Coorsamexico',
             'rol_id' => 1,
+            'active' => 1,
             'email' => 'admin@coorsamexico.com',
             'password' => Hash::make('admin123'),
         ]);

@@ -1,15 +1,14 @@
-import DialogModal from '@/Components/DialogModal.vue';
 <script setup>
 import { useForm } from "@inertiajs/inertia-vue3";
 import { computed } from "@vue/runtime-core";
-import ComponentLabel from "../../../Components/ComponentLabel.vue";
-import InputVue from "../../../Components/Input.vue";
-import SelectComponent from "../../../Components/SelectComponent.vue";
-import InputError from "../../../Jetstream/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import TextInput from "@/Components//TextInput.vue";
+import SelectComponent from "@/Components/SelectComponent.vue";
+import InputError from "@/Components/InputError.vue";
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import PrimaryButton from '@/Components/Button.vue';
-import SpinProgress from "../../../Components/SpinProgress.vue";
-import DialogModal from "../../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Jetstream/DialogModal.vue";
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SpinProgress from "@/Components/SpinProgress.vue";
+import DialogModal from "@/Components/DialogModal.vue";
 
 const emit = defineEmits(["close", "messageError"]);
 const props = defineProps({
@@ -38,9 +37,12 @@ const form = useForm({
     nombre: '',
     ap_paterno: '',
     ap_materno: '',
-    role_id: '',
-    password: ''
+    rol_id: '',
+    password: '',
+    active:1
 });
+
+console.log(form);
 
 
 const close = () => {
@@ -61,8 +63,9 @@ const title = computed(() => {
         form.nombre = props.user.nombre;
         form.ap_paterno = props.user.ap_paterno;
         form.ap_materno = props.user.ap_materno;
-        form.role_id = props.user.role_id;
+        form.rol_id = props.user.rol_id;
         form.password = '';
+        form.active = 1;
 
         return 'Actualizar Usuario';
     }
@@ -106,64 +109,64 @@ const createOrUpdate = async () => {
             <form id="formUser" @submit.prevent="createOrUpdate()">
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-2">
                     <div class="mt-2">
-                        <ComponentLabel for="name">
+                        <InputLabel for="name">
                             Nombre de Usuario:<span class="text-red-400">*</span>
-                        </ComponentLabel>
+                        </InputLabel>
 
-                        <InputVue id="name" type="text" placeholder="Nombre de Usuario" v-model="form.name"
+                        <TextInput id="name" type="text" placeholder="Nombre de Usuario" v-model="form.name"
                             class="block w-full mt-1" required maxlength="40" />
                         <InputError :message="form.errors.name" class="mt-2" />
                     </div>
                     <div class="mt-2">
-                        <ComponentLabel for="email">
+                        <InputLabel for="email">
                             Correo:<span class="text-red-400">*</span>
-                        </ComponentLabel>
-                        <InputVue id="email" type="email" placeholder="ejemplo@coorsamexico.com" v-model="form.email"
+                        </InputLabel>
+                        <TextInput id="email" type="email" placeholder="ejemplo@coorsamexico.com" v-model="form.email"
                             class="block w-full mt-1" required maxlength="100" />
                         <InputError :message="form.errors.email" class="mt-2" />
                     </div>
                     <div class="mt-2">
-                        <ComponentLabel for="nombre">
+                        <InputLabel for="nombre">
                             Nombre(s):<span class="text-red-400">*</span>
-                        </ComponentLabel>
-                        <InputVue id="nombre" type="text" placeholder="Nombre" v-model="form.nombre"
+                        </InputLabel>
+                        <TextInput id="nombre" type="text" placeholder="Nombre" v-model="form.nombre"
                             class="block w-full mt-1" required maxlength="30" />
                         <InputError :message="form.errors.nombre" class="mt-2" />
                     </div>
                     <div class="mt-2">
-                        <ComponentLabel for="ap_paterno">
+                        <InputLabel for="ap_paterno">
                             Apellido Paterno:<span class="text-red-400">*</span>
-                        </ComponentLabel>
-                        <InputVue id="ap_paterno" type="text" placeholder="Apellido Paterno" v-model="form.ap_paterno"
+                        </InputLabel>
+                        <TextInput id="ap_paterno" type="text" placeholder="Apellido Paterno" v-model="form.ap_paterno"
                             class="block w-full mt-1" required maxlength="30" />
                         <InputError :message="form.errors.ap_paterno" class="mt-2" />
                     </div>
                     <div class="mt-2">
-                        <ComponentLabel for="ap_materno" value="Apellido Materno:" />
-                        <InputVue id="ap_materno" type="text" placeholder="Apellido Materno (Opcional)"
+                        <InputLabel for="ap_materno" value="Apellido Materno:" />
+                        <TextInput id="ap_materno" type="text" placeholder="Apellido Materno (Opcional)"
                             v-model="form.ap_materno" class="block w-full mt-1" maxlength="30" />
                         <InputError :message="form.errors.ap_materno" class="mt-2" />
                     </div>
 
                     <div class="mt-2">
-                        <ComponentLabel for="role_id">
+                        <InputLabel for="rol_id">
                             Role:<span class="text-red-400">*</span>
-                        </ComponentLabel>
-                        <SelectComponent id="role_id" name="role_id" v-model="form.role_id"
+                        </InputLabel>
+                        <SelectComponent id="rol_id" name="rol_id" v-model="form.rol_id"
                             class="block w-full mt-1 uppercase" required>
                             <option value="" disabled>Selecciona un role</option>
-                            <option v-for="role in roles" :key="role.id" :value="role.id">
-                                {{ role.name }}
+                            <option v-for="rol in roles" :key="rol.id" :value="rol.id">
+                                {{ rol.name }}
                             </option>
                         </SelectComponent>
-                        <InputError :message="form.errors.role_id" class="mt-2" />
+                        <InputError :message="form.errors.rol_id" class="mt-2" />
                     </div>
                     <div class="mt-2">
-                        <ComponentLabel for="password">
+                        <InputLabel for="password">
                             Contraseña:
                             <span class="text-red-400">*</span>
-                        </ComponentLabel>
-                        <InputVue id="password" type="password" placeholder="******" v-model="form.password"
+                        </InputLabel>
+                        <TextInput id="password" type="password" placeholder="******" v-model="form.password"
                             class="block w-full mt-1" :required="typeForm === 'create'" maxlength="60" />
                         <InputError :message="form.errors.password" class="mt-2" />
                     </div>
