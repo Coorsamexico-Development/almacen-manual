@@ -16,8 +16,6 @@ const props = defineProps({
     },
 });
 
-
-
 const close = () => {
     emit('close');
 };
