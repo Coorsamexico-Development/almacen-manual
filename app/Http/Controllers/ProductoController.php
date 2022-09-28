@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\producto;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class ProductoController extends Controller
 {
@@ -15,8 +17,25 @@ class ProductoController extends Controller
     public function index()
     {
         //
+        $productos = DB::table(DB::raw('productos'))
+        ->select(DB::raw(
+            'productos.name AS name,
+             productos.ean AS ean,
+             productos.familia_id AS familia_id,
+             productos_tarimas.cant_disponible AS disponible'
+        ))
+        ->leftjoin('productos_tarimas','productos.id','=','productos_tarimas.producto_id')
+        ->get();
+
+        return Inertia::render('Productos/ProductosIndex', [
+            'productos' => $productos,
+        ]);
     }
 
+    public function posicionTarimas () 
+    {
+        
+    }
     /**
      * Show the form for creating a new resource.
      *

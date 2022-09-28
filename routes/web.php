@@ -8,6 +8,7 @@ use App\Http\Controllers\NivelController;
 use App\Http\Controllers\OcController;
 use App\Http\Controllers\OrdenesEntradaController;
 use App\Http\Controllers\PosicionController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TarimaController;
@@ -79,4 +80,7 @@ Route::middleware([
     Route::apiResource('ocs', OcController::class)->only('index');
     Route::get('ocs/export/example', [OcController::class, 'exportExample'])->name('ocs.export.example');
     Route::post('ocs/import', [OcController::class, 'import'])->name('ocs.import');
+
+    //Productos
+    Route::apiResource('productos', ProductoController::class)->except('show');
 });

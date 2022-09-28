@@ -254,7 +254,6 @@ watch(params, throttle(function () {
                                 </td>
                             </tr>
                         </template>
-
                     </DataTable>
                     <Pagination :pagination="ocs" />
                 </div>
