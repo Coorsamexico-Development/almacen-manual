@@ -54,7 +54,7 @@ class EntradaController extends Controller
             $entradas->orderBy('entradas.created_at', 'desc');
         }
         return response()->json([
-            'entradas' =>  $entradas->paginate(20),
+            'entradas' =>  $entradas->paginate(10),
             'filters' => request(['search', 'field', 'direction'])
         ]);
     }

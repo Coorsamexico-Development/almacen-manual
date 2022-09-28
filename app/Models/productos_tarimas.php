@@ -9,6 +9,12 @@ class productos_tarimas extends Model
 {
     use HasFactory;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'productos_tarimas';
 
     protected $fillable = [
         'entradas_real_id',

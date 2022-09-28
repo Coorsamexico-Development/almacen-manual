@@ -2,15 +2,14 @@
 import { reactive, ref, watch, watchEffect } from 'vue';
 import DialogModal from '@/Components/DialogModal.vue'
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import SearchInput from '../../../Components/SearchInput.vue';
-import { throttle } from 'lodash';
 import DataTable from '../../../Components/DataTable.vue';
+import SearchInput from '../../../Components/SearchInput.vue';
+import TextInput from '@/Components/TextInput.vue';
 import PaginationAxios from '../../../Components/PaginationAxios.vue';
-import ActionMessage from '@/Components/ActionMessage.vue';
-
+import { throttle } from 'lodash';
+import PosicionsProductoModal from './PosicionsProductoModal.vue';
 
 const emit = defineEmits(['close', 'messageError', 'showImagesTarima']);
-const productoSelected = ref({ id: -1 })
 
 
 const props = defineProps({
@@ -18,21 +17,25 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    tarima: {
+    oc: {
         type: Object,
-        require: true
+        required: true
     },
 });
 
-const posicions = ref({ data: [] });
-const messageUpdate = ref('');
+
+const salidas = ref({ data: [] });
 const filters = reactive({ search: null, field: null, direction: null });
+const showingPosicions = ref(false);
+const salidaSeleted = ref({ id: -1 });
 
-const getPosiciones = async () => {
+
+
+
+const getSalidas = async () => {
     try {
-        const response = await axios.get(route('posiciones-disponible.index'));
-        posicions.value = response.data.posicions;
-
+        const response = await axios.get(route('ocs.salidas.index', props.oc.id));
+        salidas.value = response.data.salidas;
     } catch (error) {
         if (error.response) {
             console.log(error.response);
@@ -51,17 +54,16 @@ const getPosiciones = async () => {
 
 
 
-const searchPosiciones = async () => {
+const searchSalidas = async () => {
     try {
-        const response = await axios.get(route('posiciones-disponible.index'), {
+        const response = await axios.get(route('ocs.salidas.index', props.oc.id), {
             params: {
                 search: filters.search,
                 field: filters.field,
                 direction: filters.direction
             }
         });
-        posicions.value = response.data.posicions;
-
+        salidas.value = response.data.salidas;
     } catch (error) {
         if (error.response) {
             console.log(error.response);
@@ -79,7 +81,7 @@ const searchPosiciones = async () => {
 
 const loadPage = async (page) => {
     try {
-        const response = await axios.get(route('posiciones-disponible.index'), {
+        const response = await axios.get(route('ocs.salidas.index', props.oc.id), {
             params: {
                 search: filters.search,
                 field: filters.field,
@@ -87,7 +89,7 @@ const loadPage = async (page) => {
                 page: page
             }
         });
-        posicions.value = response.data.posicions;
+        salidas.value = response.data.salidas;
     } catch (error) {
         if (error.response) {
             console.log(error.response);
@@ -107,51 +109,32 @@ const sort = (field) => {
     filters.direction = filters.direction === "asc" ? "desc" : "asc";
 }
 
-const changePosition = async (posicion) => {
-    try {
-        const response = await axios.put(route('tarimas.posiciones.update', props.tarima.id), {
-            posicion_id: posicion.id,
 
-        });
-        messageUpdate.value = response.data.message;
-        props.tarima.posicion = posicion.name;
-        searchPosiciones();
-        setTimeout(() => {
-            messageUpdate.value = '';
-        }, 400)
-    } catch (error) {
-        console.log(error);
-        if (error.response) {
-            console.log(error.response);
-            let messageError = '';
-            const messageServer = error.response.data.message
-            if (error.response.status != 500) {
-                messageError = messageServer;
-            } else {
-                messageError = 'Internal Server Error';
-            }
-            entrada.error = messageError;
-        }
-    }
+
+// En Modal
+
+const showPosicionsProducto = (salida) => {
+    salidaSeleted.value = salida;
+    showingPosicions.value = true;
 }
+//
+
+watchEffect(() => {
+    if (props.oc.id !== -1 && props.show) {
+        getSalidas();
+    }
+})
+
+watch(filters, throttle(function () {
+    if (props.oc.id !== -1)
+        searchSalidas();
+}, 150))
+
 
 
 const close = () => {
     emit('close');
 };
-
-
-watchEffect(() => {
-    if (props.tarima.id !== -1 && props.show) {
-        getPosiciones();
-    }
-})
-
-watch(filters, throttle(function () {
-    if (props.tarima.id !== -1)
-        searchPosiciones();
-}, 150))
-
 
 
 </script>
@@ -162,17 +145,11 @@ watch(filters, throttle(function () {
         <template #title>
             <div class="flex gap-2 px-2">
                 <h1 class="font-semibold text-gray-600 text-md">
-                    Productos
+                    SALIDAS SKUS
                 </h1>
-                <span class="px-2 text-white bg-gray-700 rounded">
-                    {{tarima.name}}
+                <span class="p-1 font-semibold text-blue-900">
+                    {{ oc.name }}
                 </span>
-                <span class="px-2 text-white bg-yellow-700 rounded">
-                    {{tarima.posicion}}
-                </span>
-                <ActionMessage :on="messageUpdate !==''" class="ml-2 text-green-500">
-                    {{messageUpdate}}
-                </ActionMessage>
             </div>
         </template>
         <template #content>
@@ -186,12 +163,11 @@ watch(filters, throttle(function () {
                     </template>
                     <template #table-header>
                         <tr class="text-center">
-
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('posicions.name')">
-                                    POSICION
-                                    <template v-if="filters.field === 'posicions.name'">
+                                <span class="" @click="sort('productos.ean')">
+                                    SKU
+                                    <template v-if="filters.field === 'productos.ean'">
                                         <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                             class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path
@@ -207,9 +183,9 @@ watch(filters, throttle(function () {
                             </th>
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('rack')">
-                                    RACK
-                                    <template v-if="filters.field === 'rack'">
+                                <span class="" @click="sort('productos.name')">
+                                    salida
+                                    <template v-if="filters.field === 'productos.name'">
                                         <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                             class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path
@@ -225,9 +201,9 @@ watch(filters, throttle(function () {
                             </th>
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('status')">
-                                    STATUS
-                                    <template v-if="filters.field === 'status'">
+                                <span class="" @click="sort('solicitado')">
+                                    CANTIDAD SOLICITADA
+                                    <template v-if="filters.field === 'solicitado'">
                                         <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                             class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path
@@ -243,9 +219,9 @@ watch(filters, throttle(function () {
                             </th>
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('nivel')">
-                                    NIVEL
-                                    <template v-if="filters.field === 'nivel'">
+                                <span class="" @click="sort('surtido')">
+                                    CANTIDAD SURTIDA
+                                    <template v-if="filters.field === 'surtido'">
                                         <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
                                             class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path
@@ -261,61 +237,51 @@ watch(filters, throttle(function () {
                             </th>
                             <th scope="col"
                                 class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                <span class="" @click="sort('columna')">
-                                    COLUMNA
-                                    <template v-if="filters.field === 'columna'">
-                                        <svg v-if="filters.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
-                                            class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
-                                        </svg>
-                                        <svg v-if="filters.direction === 'desc'" xmlns="http://www.w3.org/2000/svg"
-                                            class="inline w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
-                                        </svg>
-                                    </template>
+                                <span>
+                                    SURTIRSE
                                 </span>
                             </th>
                         </tr>
                     </template>
                     <template #table-body>
-                        <tr v-for="(posicion, index) in posicions.data" :key="index"
-                            class="text-gray-500 cursor-pointer text-md hover:bg-gray-800 hover:text-white">
-
+                        <tr v-for="(salida, index) in salidas.data" :key="index" class="text-sm text-gray-500">
                             <td class="px-2 py-1 whitespace-nowrap">
-
-                                <span class="px-2 py-1 mr-2 text-white bg-yellow-500 rounded">
-                                    {{ posicion.name }}
+                                {{ salida.ean }}
+                            </td>
+                            <td class="px-2 py-1 whitespace-nowrap">
+                                {{ salida.producto }}
+                            </td>
+                            <td class="px-2 py-1 whitespace-nowrap">
+                                <span class="px-2 py-1 text-white bg-yellow-600 rounded">
+                                    {{ salida.solicitado }}
                                 </span>
-                                <SecondaryButton @click="changePosition(posicion)">
-                                    MOVER
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5z" />
-                                        <path fill-rule="evenodd"
-                                            d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0v-5z" />
+                            </td>
+                            <td class="px-2 py-1 whitespace-nowrap">
+                                <span class="px-2 py-1 text-white bg-green-600 rounded">
+                                    {{ salida.surtido }}
+                                </span>
+                            </td>
+                            <td class="px-2 py-1 whitespace-nowrap">
+                                <SecondaryButton class="py-1" @click="showPosicionsProducto(salida)">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-1"
+                                        viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                                     </svg>
+                                    SURTIRSE
                                 </SecondaryButton>
-                            </td>
-                            <td class="px-2 py-1 whitespace-nowrap">
-                                {{ posicion.rack }}
-                            </td>
-                            <td class="px-2 py-1 whitespace-nowrap">
-                                {{ posicion.status }}
-                            </td>
-                            <td class="px-2 py-1 whitespace-nowrap">
-                                {{ posicion.nivel }}
-                            </td>
-                            <td class="px-2 py-1 whitespace-nowrap">
-                                {{ posicion.columna }}
                             </td>
                         </tr>
                     </template>
 
                 </DataTable>
-                <PaginationAxios :pagination="posicions" @loadPage="loadPage" />
+                <PaginationAxios :pagination="salidas" @loadPage="loadPage" />
             </div>
+            <PosicionsProductoModal :show="showingPosicions" :salida="salidaSeleted"
+                @close="showingPosicions = false" />
         </template>
         <template #footer>
             <div class="mx-2 my-2">

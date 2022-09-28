@@ -41,7 +41,7 @@ const buttonClasses = computed(() => {
 
 </script>
 <template>
-    <div class="relative flex flex-wrap items-stretch w-full mb-4">
+    <div class="relative flex flex-wrap items-stretch w-full">
         <input :type="type" :min="min"
             class="relative flex-1 flex-grow flex-shrink w-px h-10 px-3 leading-normal border border-gray-500 rounded rounded-r-none"
             :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" ref="input"

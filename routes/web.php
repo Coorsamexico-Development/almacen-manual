@@ -10,6 +10,7 @@ use App\Http\Controllers\OrdenesEntradaController;
 use App\Http\Controllers\PosicionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\RackController;
+use App\Http\Controllers\SalidaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TarimaController;
 use Illuminate\Foundation\Application;
@@ -83,4 +84,10 @@ Route::middleware([
 
     //Productos
     Route::apiResource('productos', ProductoController::class)->except('show');
+    Route::get('ocs/{oc}/salidas', [OcController::class, 'indexSalidas'])->name('ocs.salidas.index');
+
+    //Posiciones Producto
+    Route::get('posicions-producto', [PosicionController::class, 'posicionesProducto'])->name('posicions-producto.index');
+
+    Route::put('salidas/{salida}', [SalidaController::class, 'update'])->name('salida.update');
 });

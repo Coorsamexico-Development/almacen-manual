@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
@@ -150,7 +151,7 @@ class TarimaController extends Controller
             foreach ($entradasReales as $entradaReal) {
 
                 if ($entradaReal->disponible >= $cantidad) {
-                    $entradaReal->disponible = $entradaReal->cantidad - $cantidad;
+                    $entradaReal->disponible = $entradaReal->disponible - $cantidad;
                     $tarima->entradasReales()->attach([
                         $entradaReal->id =>
                         ['cant_disponible' => $cantidad, 'producto_id' => $entrada->producto_id, 'user_id' => Auth::id()]
@@ -228,7 +229,8 @@ class TarimaController extends Controller
         }
         $entradasReales = entradas_real::select('entradas_reals.*')
             ->with(['productosTarimas' => function ($query) use ($tarima) {
-                $query->where('productos_tarimas.tarima_id', '=', $tarima->id);
+                $query->where('productos_tarimas.tarima_id', '=', $tarima->id)
+                    ->where('productos_tarimas.cant_disponible', '>', 0);
             }])
             ->where('entradas_reals.entrada_id', '=', $entrada->id)
             ->where('entradas_reals.disponible', '<', DB::raw('`entradas_reals`.`cantidad`'))
@@ -237,19 +239,20 @@ class TarimaController extends Controller
         $cantidad = $request->cantidad;
         try {
             DB::beginTransaction();
-
             foreach ($entradasReales as $entradaReal) {
+                //
                 $cantidadTomada = $entradaReal->cantidad - $entradaReal->disponible;
                 if (($cantidadTomada) >= $cantidad) {
                     $entradaReal->disponible = $entradaReal->disponible + $cantidad;
                     $auxTotal = $cantidad;
                     foreach ($entradaReal->productosTarimas as $productoTarima) {
-                        if ($productoTarima->cant_disponible >= $auxTotal) {
+                        Log::info("Cantidad Disponible: " . $productoTarima->cant_disponible . " auxTotal:" . $auxTotal);
+                        if ($productoTarima->cant_disponible > $auxTotal) {
                             $productoTarima->cant_disponible = $productoTarima->cant_disponible  - $auxTotal;
                             $productoTarima->save();
                             $auxTotal = 0;
                         } else {
-                            $auxTotal -= $productoTarima->cant_disponible;
+                            $auxTotal = $auxTotal - $productoTarima->cant_disponible;
                             $productoTarima->delete();
                         }
 
@@ -257,7 +260,7 @@ class TarimaController extends Controller
                             break;
                         }
                     }
-                    $cantidad = 0;
+                    $cantidad = $auxTotal;
                 } else {
                     $cantidad -= $cantidadTomada;
                     $entradaReal->disponible = $entradaReal->disponible + $cantidadTomada;

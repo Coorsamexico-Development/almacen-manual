@@ -13,7 +13,7 @@ import ActionMessage from '@/Components/ActionMessage.vue';
 import SearchInput from '@/Components/SearchInput.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Pagination from '../../Components/Pagination.vue';
-import ProductosModal from './Partials/ProductosModal.vue';
+import SalidasProductosModal from './Partials/SalidasProductosModal.vue';
 
 
 const props = defineProps({
@@ -40,7 +40,7 @@ const form = useForm({
 const file = ref(null);
 const fileName = ref(null);
 const ocSelected = ref({ id: -1 });
-const showingProductosModal = ref(false);
+const showingSalidaProdModal = ref(false);
 
 const selectFile = () => {
     file.value.click();
@@ -67,11 +67,11 @@ const sort = (field) => {
 
 const showProductos = (entradaSelect) => {
     ocSelected.value = entradaSelect;
-    showingProductosModal.value = true;
+    showingSalidaProdModal.value = true;
 }
-const closeModalProductos = () => {
+const closeModalSalidasProd = () => {
     ocSelected.value = { id: -1 };
-    showingProductosModal.value = false;
+    showingSalidaProdModal.value = false;
 }
 
 
@@ -260,6 +260,6 @@ watch(params, throttle(function () {
             </div>
         </div>
         <!-- Modals -->
-        <ProductosModal :show="showingProductosModal" :oc="ocSelected" @close="closeModalProductos()" />
+        <SalidasProductosModal :show="showingSalidaProdModal" :oc="ocSelected" @close="closeModalSalidasProd()" />
     </AppLayout>
 </template>
