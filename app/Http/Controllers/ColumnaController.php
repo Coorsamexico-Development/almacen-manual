@@ -25,6 +25,7 @@ class ColumnaController extends Controller
 
     /**
      * Almacena una cantidad especifica de columnas
+     * 
      */
     public function store(rack $rack, Request $request)
     {
