@@ -16,6 +16,8 @@ const props = defineProps({
     },
 });
 
+
+
 const close = () => {
     emit('close');
 };
@@ -32,7 +34,7 @@ const close = () => {
                     Productos
                 </h1>
                 <span class="p-1 font-semibold text-blue-900">
-                  
+                  {{producto}}
                 </span>
             </div>
         </template>

@@ -6,6 +6,7 @@ use App\Models\producto;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductoController extends Controller
 {
@@ -31,6 +32,7 @@ class ProductoController extends Controller
             'productos' => $productos,
         ]);
     }
+
 
     public function posicionTarimas () 
     {

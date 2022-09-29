@@ -14,7 +14,7 @@
     import SecondaryButton from '@/Components/SecondaryButton.vue';
     import Pagination from '../../Components/Pagination.vue';
     import ProductosModal from './Partials/ProductosModal.vue';
-    
+    //comentario
     
     const props = defineProps
     ({
@@ -69,7 +69,6 @@
 </script>
     
     <template>
-        {{productos}}
         <AppLayout title="Entradas">
             <template #header>
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
