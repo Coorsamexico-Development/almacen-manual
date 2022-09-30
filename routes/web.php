@@ -89,5 +89,11 @@ Route::middleware([
     //Posiciones Producto
     Route::get('posicions-producto', [PosicionController::class, 'posicionesProducto'])->name('posicions-producto.index');
 
+    //Exportacion Excel
+    Route::get('productos/export/example', [ProductoController::class, 'exportExample'])->name('productos.export.example');
+
     Route::put('salidas/{salida}', [SalidaController::class, 'update'])->name('salida.update');
+    
+    //Importacion productos excel
+    Route::post('productos/import', [ProductoController::class, 'import'])->name('productos.import');
 });

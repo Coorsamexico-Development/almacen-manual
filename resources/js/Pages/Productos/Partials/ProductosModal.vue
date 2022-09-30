@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import DialogModal from '@/Components/DialogModal.vue'
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-
+import DataTable from '@/Components/DataTable.vue';
 const emit = defineEmits(['close', 'messageError', 'showImagesTarima']);
 
 const props = defineProps({
@@ -17,7 +17,6 @@ const props = defineProps({
 });
 
 
-
 const close = () => {
     emit('close');
 };
@@ -27,20 +26,36 @@ const close = () => {
 
 
 <template>
-    <DialogModal :show="show" maxWidth="6xl" @close="close()">
+    <DialogModal :show="show" maxWidth="2xl" @close="close()">
         <template #title>
             <div class="flex gap-2 px-2">
                 <h1 class="font-semibold text-gray-600 text-md">
-                    Productos
+                    Ubicacion {{props.producto.name}}
                 </h1>
-                <span class="p-1 font-semibold text-blue-900">
-                  {{producto}}
-                </span>
             </div>
         </template>
         <template #content>
-            <div class="flex w-full">
-
+            <div class="w-full">
+                <DataTable>
+                    <template #table-header>
+                             <tr class="text-center" >
+                             <th style="padding-left:2rem">EAN</th>
+                             <th style="padding-left:2rem">Tarima</th>
+                             <th style="padding-left:2rem">Posicion</th>
+                             <th style="padding-left:2rem; padding-right: 2rem;">Rack</th>
+                             <th>Disponible</th>   
+                        </tr>
+                    </template>
+                    <template #table-body>
+                        <tr>
+                            <td>{{props.producto.ean}}</td>    
+                            <td>{{props.producto.tarima_nombre}}</td>    
+                            <td>{{props.producto.posicion_name}}</td>     
+                            <td>{{props.producto.rack_name}}</td>  
+                            <td>{{props.producto.disponible}}</td>         
+                        </tr>                               
+                    </template>
+                 </DataTable>
             </div>
         </template>
         <template #footer>

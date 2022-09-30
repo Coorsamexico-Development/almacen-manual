@@ -16,24 +16,25 @@
     import ProductosModal from './Partials/ProductosModal.vue';
     //comentario
     
+//PROPS O VARIABLES
     const props = defineProps
     ({
         productos:Object 
     });
-    
+//BUSCADOR
     const params = reactive({
         search: "",
     })
-    
-    const form = useForm({
+
+//BUSCADOR
+    const form = useForm  //DEFINIMOS EL FORM QUE ALMACENARA EL ARCHIVO
+    ({
         file: [],
     });
     
-    const file = ref(null);
-    const fileName = ref(null);
+    const file = ref(null); //VARIABLE PARA EL ARCHIVO
+    const fileName = ref(null); //VARIABLE PARA NOMBRE DE ARCHIVO
     const ocSelected = ref({ id: -1 });
-    const showingProductos = ref(false);
-    const producto = ref({ id: -1 });
 
     const selectFile = () => {
         file.value.click();
@@ -41,23 +42,47 @@
     
     const setFileName = () => 
     {
-        const fileGet = file.value.files[0];
-        fileName.value = fileGet.name;
+        const fileGet = file.value.files[0]; //Obtenemos el archivo
+        fileName.value = fileGet.name; //asignamos el valor del archivo a la variable 
+       
     };
 
-    const importProducts = () => {
-    form.post(route('productos.import'), {
-        preserveState: true,
-        preserveScroll: true,
-        onSuccess: () => {
-            form.reset(['file']);
-        }
-    })
+   const importProducts = () => {
+       form.post(route('productos.import'), {
+          preserveState: true,
+          preserveScroll: true,
+          onSuccess: () => {
+             form.reset(['file']);
+         }
+       })
+   };
+
+//AGRUPACION
+const sort = (field) => {
+    params.field = field;
+    params.direction = params.direction === "asc" ? "desc" : "asc";
 };
 
+//MODALES FUNCTIONS
+  const productoModal = ref({ id: -1 });
+  const showingProductos = ref(false);
   const abrirModalVerProductos = (productoSelect) => 
   {
-    producto.value = productoSelect;
+    //producto.value = productoSelect; //recuperamos el objeto completo que le dimos click
+    let idProducto = productoSelect.id;
+    console.log(idProducto);
+    axios.get('/api/tarima_posicion/'+idProducto,{ob: idProducto}) //enviamos el dato a la ruta de la api
+        .then((resp)=>
+            {
+              console.log(resp);
+              productoModal.value = resp.data[0];
+              console.log(productoModal);
+             })
+        .catch(function (error)
+           {
+            console.log(error);
+        });
+
     showingProductos.value = true;
   }
 
@@ -111,7 +136,7 @@
                                             <SpinProgress v-if="form.processing" :inprogress="form.processing" /> SUBIR
                                         </InfoButton>
                                     </form>
-                                    <a  class="block" download>
+                                    <a :href="route('productos.export.example')"  class="block" download>
                                         <PrimaryButton type="button">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2"
                                                 fill="currentColor" viewBox="0 0 16 16">
@@ -138,7 +163,7 @@
                             <template #table-header>
                                 <tr class="text-center">
                                   <th scope="col" class="w-1/12 px-6 py-3 text-xs font-semibold tracking-wider uppercase cursor-pointer ">
-                                    <span class="" @click="sort('name')">
+                                    <span class="" @click="sort('ean')">
                                         EAN
                                         <template v-if="params.field === 'name'">
                                             <svg v-if="params.direction === 'asc'" xmlns="http://www.w3.org/2000/svg"
@@ -214,7 +239,7 @@
                 </div>
             </div>
             <!-- Modals -->
-            <ProductosModal :show="showingProductos" :producto="producto" @close="closeModalProductos()" />
+            <ProductosModal :show="showingProductos" :producto="productoModal" @close="closeModalProductos()" />
         </AppLayout>
     </template>
     

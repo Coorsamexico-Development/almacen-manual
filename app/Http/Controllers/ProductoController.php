@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductosExport;
 use App\Models\producto;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class ProductoController extends Controller
 {
@@ -20,7 +24,8 @@ class ProductoController extends Controller
         //
         $productos = DB::table(DB::raw('productos'))
         ->select(DB::raw(
-            'productos.name AS name,
+            'productos.id AS id,
+             productos.name AS name,
              productos.ean AS ean,
              productos.familia_id AS familia_id,
              productos_tarimas.cant_disponible AS disponible'
@@ -31,6 +36,22 @@ class ProductoController extends Controller
         return Inertia::render('Productos/ProductosIndex', [
             'productos' => $productos,
         ]);
+    }
+
+    public function exportExample()
+    {
+        try {
+            return Excel::download(new ProductosExport, 'PRODUCTOS_IMPORT.xlsx');
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            return response()->download(storage_path("app/public/errors/error_file.png"));
+        }
+    }
+
+
+    public function import(Request $request)
+    {
+      
     }
 
 
