@@ -38,7 +38,6 @@ const form = useForm({
 });
 
 const file = ref(null);
-const fileName = ref(null);
 const ocSelected = ref({ id: -1 });
 const showingSalidaProdModal = ref(false);
 
@@ -51,6 +50,8 @@ const setFileName = () => {
 };
 
 const importOcs = () => {
+    form.file = file.value.files[0];
+    console.log(form.file);
     form.post(route('ocs.import'), {
         preserveState: true,
         preserveScroll: true,

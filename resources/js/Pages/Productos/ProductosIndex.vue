@@ -32,22 +32,21 @@
         file: [],
     });
     
-    const file = ref(null); //VARIABLE PARA EL ARCHIVO
-    const fileName = ref(null); //VARIABLE PARA NOMBRE DE ARCHIVO
-    const ocSelected = ref({ id: -1 });
+    const fileUpload = ref(null); //VARIABLE PARA EL ARCHIVO
 
     const selectFile = () => {
-        file.value.click();
+        fileUpload.value.click();
     };
     
     const setFileName = () => 
     {
-        const fileGet = file.value.files[0]; //Obtenemos el archivo
-        fileName.value = fileGet.name; //asignamos el valor del archivo a la variable 
-       
+        const newFile = fileUpload.value.files[0]; //Obtenemos el archivo   y lo asignamos a variable
+        //console.log(newFile);
     };
 
    const importProducts = () => {
+       form.file = fileUpload;
+       console.log(form.file);
        form.post(route('productos.import'), {
           preserveState: true,
           preserveScroll: true,
@@ -113,7 +112,7 @@ const sort = (field) => {
                                     <form id="formImport" class="flex" @submit.prevent="importProducts()">
                                         <div class="relative col-span-2">
                                             <InputLabel class="absolute -top-5" :value="fileName" />
-                                            <input type="file" class="hidden" ref="file" name="file"
+                                            <input type="file" class="hidden" ref="fileUpload" name="file"
                                                 @change="setFileName()"
                                                 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
                                             <PrimaryButton class="mr-2" type="button" @click="selectFile()">
