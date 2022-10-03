@@ -30,7 +30,7 @@ const close = () => {
         <template #title>
             <div class="flex gap-2 px-2">
                 <h1 class="font-semibold text-gray-600 text-md">
-                    Ubicacion {{props.producto.name}}
+                    Ubicacion {{props.producto[0].name}}
                 </h1>
             </div>
         </template>
@@ -47,12 +47,12 @@ const close = () => {
                         </tr>
                     </template>
                     <template #table-body>
-                        <tr>
-                            <td>{{props.producto.ean}}</td>    
-                            <td>{{props.producto.tarima_nombre}}</td>    
-                            <td>{{props.producto.posicion_name}}</td>     
-                            <td>{{props.producto.rack_name}}</td>  
-                            <td>{{props.producto.disponible}}</td>         
+                        <tr v-for="dato in producto" :key="dato.id">
+                            <td>{{dato.ean}}</td>    
+                            <td>{{dato.tarima_nombre}}</td>    
+                            <td>{{dato.posicion_name}}</td>     
+                            <td>{{dato.rack_name}}</td>  
+                            <td>{{dato.disponible}}</td>         
                         </tr>                               
                     </template>
                  </DataTable>

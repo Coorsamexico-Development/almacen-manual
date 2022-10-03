@@ -30,9 +30,10 @@ class ProductoController extends Controller
              productos.name AS name,
              productos.ean AS ean,
              productos.familia_id AS familia_id,
-             productos_tarimas.cant_disponible AS disponible'
+             SUM(productos_tarimas.cant_disponible )  AS disponible'
         ))
         ->leftjoin('productos_tarimas','productos.id','=','productos_tarimas.producto_id')
+        ->groupBy('productos.name')
         ->get();
 
         return Inertia::render('Productos/ProductosIndex', [

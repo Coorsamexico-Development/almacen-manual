@@ -77,7 +77,7 @@ const sort = (field) => {
         .then((resp)=>
             {
               console.log(resp);
-              productoModal.value = resp.data[0];
+              productoModal.value = resp.data;
               console.log(productoModal);
              })
         .catch(function (error)
