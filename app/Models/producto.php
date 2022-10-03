@@ -12,6 +12,7 @@ class producto extends Model
 
     protected $fillable = [
         'name',
-        'ean'
+        'ean',
+        'familia_id'
     ];
 }

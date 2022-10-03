@@ -42,18 +42,21 @@
     {
         const newFile = fileUpload.value.files[0]; //Obtenemos el archivo   y lo asignamos a variable
         //console.log(newFile);
+        form.file = fileUpload;
+        console.log(form.file);
     };
 
-   const importProducts = () => {
-       form.file = fileUpload;
-       console.log(form.file);
-       form.post(route('productos.import'), {
-          preserveState: true,
-          preserveScroll: true,
-          onSuccess: () => {
-             form.reset(['file']);
-         }
-       })
+   const importProducts = () => 
+   {
+    form.file = fileUpload.value.files[0];
+    console.log(form.file);
+    form.post(route('productos.import'), {
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset(['file']);
+        }
+    })
    };
 
 //AGRUPACION

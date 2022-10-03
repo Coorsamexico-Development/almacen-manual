@@ -22,7 +22,7 @@ class ProductosExport implements FromCollection, WithHeadings
         return [
             'EAN',
             'DESCRIPCION',
-            'FAMILIA',
+            'FAMILIA'
         ];
     }
 }

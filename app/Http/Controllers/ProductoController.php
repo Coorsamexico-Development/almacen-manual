@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ProductosExport;
+use App\Imports\ProductoImport;
 use App\Models\producto;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ProductoController extends Controller
 {
@@ -54,6 +56,16 @@ class ProductoController extends Controller
         $request->validate([
             'file' => ['required', 'mimes:xlsx'],
         ]);
+        try {
+            $ProdImport = new ProductoImport(Auth::id());
+            Excel::import($ProdImport, $request->file('file'));
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw ValidationException::withMessages([
+                'message' => $e->getMessage()
+            ]);
+        }
+        return redirect()->back();  
     }
 
 
