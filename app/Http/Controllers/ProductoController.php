@@ -18,7 +18,7 @@ class ProductoController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * comentariooo
      * @return \Illuminate\Http\Response
      */
     public function index()
