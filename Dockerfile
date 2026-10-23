@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-alpine
+FROM php:8.2.35-fpm-alpine
 ARG UID=1000
 ARG GID=1000
 
